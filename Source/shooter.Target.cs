@@ -3,12 +3,12 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class shooterTarget : TargetRules
+public class ShooterTarget : TargetRules
 {
-	public shooterTarget( TargetInfo Target) : base(Target)
+	public ShooterTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "shooter" } );
+		ExtraModuleNames.AddRange( new string[] { "Shooter" } );
 	}
 }

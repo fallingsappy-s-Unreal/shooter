@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "shooter",
+			"Name": "Shooter",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
