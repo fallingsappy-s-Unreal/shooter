@@ -7,6 +7,7 @@
 #include "ShooterCharacter.generated.h"
 
 class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
@@ -32,7 +33,12 @@ private:
 	// Camera boom positioning camera behind the character
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FollowCamera;
 public:
-	// returns CameraBoom subobject
+	// Returns CameraBoom subobject
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	// Returns FollowCamera subobject
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
