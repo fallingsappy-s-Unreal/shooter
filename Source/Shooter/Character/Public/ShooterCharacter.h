@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+class USpringArmComponent;
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -26,4 +28,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	// Camera boom positioning camera behind the character
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom;
+public:
+	// returns CameraBoom subobject
+    FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 };
