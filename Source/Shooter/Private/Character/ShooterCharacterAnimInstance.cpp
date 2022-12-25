@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Shooter/Character/Public//ShooterCharacterAnimInstance.h"
+#include "Shooter/Public/Character/ShooterCharacterAnimInstance.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Shooter/Character/Public/ShooterCharacter.h"
+#include "Shooter//Public/Character/ShooterCharacter.h"
 
 void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
