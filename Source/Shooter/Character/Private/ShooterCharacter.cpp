@@ -124,7 +124,7 @@ void AShooterCharacter::Turn(float Value)
 	{
 		TurnScaleFactor = MouseHipTurnRate;
 	}
-	
+
 	APawn::AddControllerYawInput(Value * TurnScaleFactor);
 }
 
@@ -139,7 +139,7 @@ void AShooterCharacter::LookUp(float Value)
 	{
 		LookUpScaleFactor = MouseHipLookUpRate;
 	}
-	
+
 	APawn::AddControllerPitchInput(Value * LookUpScaleFactor);
 }
 
@@ -163,7 +163,7 @@ void AShooterCharacter::FireWeapon()
 		FVector BeamEndPoint;
 
 		if (!GetBeamEndLocation(SocketTransform.GetLocation(), BeamEndPoint)) return;
-		
+
 		// Spawn impact particles after updating BeamEndPoint
 		if (ImpactParticles)
 		{
@@ -282,6 +282,18 @@ void AShooterCharacter::SetLookRates()
 	}
 }
 
+void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
+{
+	FVector2D WalkSpeedRange{0.f, GetCharacterMovement()->MaxWalkSpeed};
+	FVector2D VelocityMultiplierRange{0.f, 1.0f};
+	FVector Velocity{GetVelocity()};
+	Velocity.Z = 0.f;
+
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -311,7 +323,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", IE_Pressed, this, &AShooterCharacter::FireWeapon);
-	
+
 	PlayerInputComponent->BindAction("AimingButton", IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", IE_Released, this, &AShooterCharacter::AimingButtonReleased);
 }
