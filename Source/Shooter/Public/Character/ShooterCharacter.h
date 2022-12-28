@@ -84,6 +84,9 @@ protected:
 
 	UFUNCTION()
 	void AutoFireReset();
+
+	/** Line trace for items under the crosshairs */
+	bool TraceUnderCrosshairs(FHitResult& OutHitResult);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
