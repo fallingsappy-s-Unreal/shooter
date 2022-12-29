@@ -426,7 +426,22 @@ void AShooterCharacter::TraceForItems()
 				// Show Item's Pickup Widget
 				HitItem->GetPickupWidget()->SetVisibility(true);
 			}
+			
+			if (LastHitItem && LastHitItem != HitItem)
+			{
+				// We are hitting a different AItem this frame from last frame
+				// Or AItem is null
+				LastHitItem->GetPickupWidget()->SetVisibility(false);
+			}
+
+			// Store a reference to HitItem for next frame
+			LastHitItem = HitItem;
 		}
+	}
+	else
+	{
+		// Show Item's Pickup Widget
+		LastHitItem->GetPickupWidget()->SetVisibility(false);
 	}
 }
 
