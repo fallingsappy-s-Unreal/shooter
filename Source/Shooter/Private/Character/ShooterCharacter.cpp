@@ -438,9 +438,10 @@ void AShooterCharacter::TraceForItems()
 			LastHitItem = HitItem;
 		}
 	}
-	else
+	else if (LastHitItem)
 	{
-		// Show Item's Pickup Widget
+		// No longer overlapping any items,
+		// Item last frame should not show widget
 		LastHitItem->GetPickupWidget()->SetVisibility(false);
 	}
 }

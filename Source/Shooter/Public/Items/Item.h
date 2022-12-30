@@ -63,6 +63,10 @@ private:
 	/** Enables item tracing when overlapped */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* AreaSphere;
+
+	/** The name which appears on the Pickup Widget */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	FString ItemName;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 };
