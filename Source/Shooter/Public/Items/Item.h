@@ -10,6 +10,18 @@ class UBoxComponent;
 class UWidgetComponent;
 class USphereComponent;
 
+UENUM(BlueprintType)
+enum class EItemRarity : uint8
+{
+	EIR_Damaged UMETA(DisplayName = "Damaged"),
+	EIR_Common UMETA(DisplayName = "Common"),
+	EIR_Uncommon UMETA(DisplayName = "Uncommon"),
+	EIR_Rare UMETA(DisplayName = "Rare"),
+	EIR_Legendary UMETA(DisplayName = "Legendary"),
+	
+	EIR_Max UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class SHOOTER_API AItem : public AActor
 {
@@ -43,6 +55,8 @@ protected:
 		int32 OtherBodyIndex
 	);
 
+	/** Sets the ActiveStars array of booleans based on rarity */
+	void SetActiveStars();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,6 +85,15 @@ private:
 	/** Item count (ammo, etc.) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	int32 ItemCount;
+	
+	/** Item rarity - determines number of stars in Pickup Widget */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemRarity ItemRarity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<bool> ActiveStars;
+
+	void SetActiveStars(uint8 StarsToActivate);
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 };

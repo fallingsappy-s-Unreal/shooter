@@ -11,9 +11,10 @@
 // Sets default values
 AItem::AItem():
 	ItemName(FString("Default")),
-	ItemCount(0)
+	ItemCount(0),
+	ItemRarity(EItemRarity::EIR_Common)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
@@ -23,13 +24,12 @@ AItem::AItem():
 	CollisionBox->SetupAttachment(ItemMesh);
 	CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	
+
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(GetRootComponent());
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
 	AreaSphere->SetupAttachment(GetRootComponent());
-	
 }
 
 // Called when the game starts or when spawned
@@ -38,7 +38,13 @@ void AItem::BeginPlay()
 	Super::BeginPlay();
 
 	// Hide Pickup Widget
-	PickupWidget->SetVisibility(false);
+	if (PickupWidget)
+	{
+		PickupWidget->SetVisibility(false);
+	}
+		
+	// Sets ActiveStars array based on Item Rarity
+	SetActiveStars();
 
 	// Setup overlap for AreaSphere
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
@@ -46,7 +52,8 @@ void AItem::BeginPlay()
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                            const FHitResult& SweepResult)
 {
 	if (OtherActor)
 	{
@@ -59,7 +66,7 @@ void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                               AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor)
 	{
@@ -71,10 +78,26 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
+void AItem::SetActiveStars()
+{
+	for (int32 i = 0; i < 5; i++)
+	{
+		ActiveStars.Add(false);
+	}
+
+	SetActiveStars(static_cast<uint8>(ItemRarity));
+}
+
+void AItem::SetActiveStars(const uint8 StarsToActivate)
+{
+	for (int32 i = 0; i < StarsToActivate + 1; i++)
+	{
+		ActiveStars[i] = true;
+	}
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
