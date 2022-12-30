@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
@@ -95,6 +96,9 @@ void AShooterCharacter::BeginPlay()
 		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
 		CameraCurrentFOV = CameraDefaultFOV;
 	}
+
+	// Spawn the default weapon and attach it to the mesh
+	SpawnDefaultWeapon();
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -443,6 +447,27 @@ void AShooterCharacter::TraceForItems()
 		// No longer overlapping any items,
 		// Item last frame should not show widget
 		LastHitItem->GetPickupWidget()->SetVisibility(false);
+	}
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	// Check the TSubclassOf variable
+	if (DefaultWeaponClass)
+	{
+		// Spawn the Weapon
+		AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
+
+		// Get the Hand Socket
+		const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+
+		if (RightHandSocket)
+		{
+			// Attach the Weapon to the hand socket RightHandSocket
+			RightHandSocket->AttachActor(DefaultWeapon, GetMesh());
+		}
+
+		EquippedWeapon = DefaultWeapon;
 	}
 }
 
