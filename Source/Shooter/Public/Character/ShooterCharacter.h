@@ -93,7 +93,11 @@ protected:
 	/** Trace for items if OverlappedItemCount is greater then zero */
 	void TraceForItems();
 
-	void SpawnDefaultWeapon();
+	/** Spawns a default weapons and equips it */
+	AWeapon* SpawnDefaultWeapon() const;
+	
+	/** Takes a weapon and attaches it to the mesh */
+	void EquipWeapon(AWeapon* WeaponToEquip);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
