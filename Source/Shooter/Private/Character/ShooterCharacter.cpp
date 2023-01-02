@@ -3,8 +3,6 @@
 #include "Shooter/Public/Character/ShooterCharacter.h"
 
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -59,7 +57,11 @@ AShooterCharacter::AShooterCharacter() :
 	bShouldFire(true),
 
 	// Item trace variables
-	bShouldTraceForItems(false)
+	bShouldTraceForItems(false),
+
+	// Camera inter location variables
+	CameraInterpDistance(250.f),
+	CameraInterpElevation(65.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -572,4 +574,13 @@ void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
 	}
 
 	bShouldTraceForItems = false;
+}
+
+FVector AShooterCharacter::GetCameraInterpLocation()
+{
+	const FVector CameraWorldLocation{FollowCamera->GetComponentLocation()};
+	const FVector CameraForward{FollowCamera->GetForwardVector()};
+	const FVector CameraUp{FollowCamera->GetUpVector()};
+
+	return CameraWorldLocation + CameraForward * CameraInterpDistance + CameraUp * CameraInterpElevation;
 }
