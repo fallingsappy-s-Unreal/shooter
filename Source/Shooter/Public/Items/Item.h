@@ -144,6 +144,9 @@ private:
 	/** Pointer to the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	AShooterCharacter* Character;
+	
+	float ItemInterpX;
+	float ItemInterpY;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
