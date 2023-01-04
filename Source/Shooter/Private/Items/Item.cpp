@@ -197,7 +197,7 @@ void AItem::ItemInterp(float DeltaTime)
 
 		const FVector CurrentLocation{GetActorLocation()};
 		const float InterpXValue = FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, 30.0f);
-		const float InterpYValue = FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, 30.0f);
+		const float InterpYValue = FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, 30.0f);
 		
 		ItemLocation.Z += CurveValue * DeltaZ;
 		ItemLocation.X = InterpXValue;
