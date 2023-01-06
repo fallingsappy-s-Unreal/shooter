@@ -61,7 +61,10 @@ AShooterCharacter::AShooterCharacter() :
 
 	// Camera inter location variables
 	CameraInterpDistance(250.f),
-	CameraInterpElevation(65.f)
+	CameraInterpElevation(65.f),
+
+    // Starting ammount amounts
+	AmmoMap({{EAmmoType::EAT_9mm, 85}, {EAmmoType::EAT_AR, 120}})
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -434,7 +437,7 @@ void AShooterCharacter::TraceForItems()
 				// Show Item's Pickup Widget
 				TraceHitItem->GetPickupWidget()->SetVisibility(true);
 			}
-			
+
 			if (LastHitItem && LastHitItem != TraceHitItem)
 			{
 				// We are hitting a different AItem this frame from last frame
@@ -462,7 +465,7 @@ AWeapon* AShooterCharacter::SpawnDefaultWeapon() const
 		// Spawn the Weapon
 		return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
 	}
-	
+
 	return nullptr;
 }
 
@@ -511,7 +514,7 @@ void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 	DropWeapon();
 	EquipWeapon(WeaponToSwap);
 	TraceHitItem = nullptr;
-	LastHitItem = nullptr; 
+	LastHitItem = nullptr;
 }
 
 // Called every frame
