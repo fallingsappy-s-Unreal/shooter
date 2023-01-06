@@ -45,8 +45,7 @@ void AWeapon::ThrowWeapon()
 
 void AWeapon::DecrementAmmo()
 {
-	--Ammo;
-	Ammo = FMath::Clamp(Ammo, 0, Ammo);
+	Ammo = FMath::Clamp(Ammo, 0, --Ammo);
 }
 
 void AWeapon::StopFalling()
