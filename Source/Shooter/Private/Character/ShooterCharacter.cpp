@@ -63,7 +63,7 @@ AShooterCharacter::AShooterCharacter() :
 	CameraInterpDistance(250.f),
 	CameraInterpElevation(65.f),
 
-    // Starting ammount amounts
+	// Starting ammount amounts
 	AmmoMap({{EAmmoType::EAT_9mm, 85}, {EAmmoType::EAT_AR, 120}})
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -177,15 +177,17 @@ void AShooterCharacter::LookUp(float Value)
 
 void AShooterCharacter::FireWeapon()
 {
+	if (!EquippedWeapon) return;
+
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(this, FireSound);
 	}
 
-	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName(FName("BarrelSocket"));
+	const USkeletalMeshSocket* BarrelSocket = EquippedWeapon->GetItemMesh()->GetSocketByName(FName("BarrelSocket"));
 	if (BarrelSocket)
 	{
-		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetMesh());
+		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh());
 
 		if (MuzzleFlash)
 		{
@@ -223,10 +225,7 @@ void AShooterCharacter::FireWeapon()
 
 	// Start bullet fire timer for crosshairs
 	StartCrosshairBulletFire();
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->DecrementAmmo(); 
-	}
+	EquippedWeapon->DecrementAmmo();
 }
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
@@ -361,7 +360,7 @@ void AShooterCharacter::FinishCrosshairBulletFire()
 void AShooterCharacter::FireButtonPressed()
 {
 	if (!WeaponHasAmmo()) return;
-	
+
 	bFireButtonPressed = true;
 	StartFireTimer();
 }
@@ -384,7 +383,7 @@ void AShooterCharacter::StartFireTimer()
 void AShooterCharacter::AutoFireReset()
 {
 	if (!WeaponHasAmmo()) return;
-	
+
 	bShouldFire = true;
 	if (bFireButtonPressed)
 	{
@@ -527,7 +526,7 @@ void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 
 bool AShooterCharacter::WeaponHasAmmo() const
 {
-	if (!EquippedWeapon) return  false;
+	if (!EquippedWeapon) return false;
 
 	return EquippedWeapon->GetAmmo() > 0;
 }
