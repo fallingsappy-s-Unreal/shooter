@@ -114,6 +114,8 @@ protected:
 
 	/** Drops currently equipped weapon and equips new one */
 	void SwapWeapon(AWeapon* WeaponToSwap);
+	
+	bool WeaponHasAmmo() const;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
