@@ -2,6 +2,7 @@
 
 #include "Shooter/Public/Character/ShooterCharacter.h"
 
+#include "Shooter/Public/Items/Weapons/AmmoType.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -559,16 +560,17 @@ void AShooterCharacter::ReloadButtonPressed()
 void AShooterCharacter::ReloadWeapon()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (!EquippedWeapon) return;
 
-	if (true)
+	if (CarryingAmmo())
 	{
-		FName MontageSection(TEXT("Reload SMG"));
+		CombatState = ECombatState::ECS_Reloading;
 		
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (ReloadMontage && AnimInstance)
 		{
 			AnimInstance->Montage_Play(ReloadMontage);
-			AnimInstance->Montage_JumpToSection(MontageSection);
+			AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMontageSectionName());
 		}
 	}
 }
@@ -576,6 +578,15 @@ void AShooterCharacter::ReloadWeapon()
 void AShooterCharacter::FinishReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+}
+
+bool AShooterCharacter::CarryingAmmo()
+{
+	if (EquippedWeapon) return false;
+
+	auto AmmoType = EquippedWeapon->GetAmmoType();
+
+	return AmmoMap.Contains(AmmoType) && AmmoMap[AmmoType] > 0;
 }
 
 // Called every frame
