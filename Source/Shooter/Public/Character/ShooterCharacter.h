@@ -128,11 +128,18 @@ protected:
 	
 	bool WeaponHasAmmo() const;
 
+	/** FireWeapon functions */
 	void PlayFireSound();
-
 	void SendBullet();
-
 	void PlayGunFireMontage();
+
+	
+	void ReloadButtonPressed();
+
+	void ReloadWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -303,6 +310,9 @@ private:
 	/** Combat State, can only fire or reload if Unoccupied */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadMontage;
 public:
 	// Returns CameraBoom subobject
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

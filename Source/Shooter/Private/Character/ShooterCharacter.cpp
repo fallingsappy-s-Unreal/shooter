@@ -354,7 +354,7 @@ void AShooterCharacter::AutoFireReset()
 	}
 	else
 	{
-		// Reload Weapon
+		ReloadWeapon();
 	}
 }
 
@@ -551,6 +551,33 @@ void AShooterCharacter::PlayGunFireMontage()
 	}
 }
 
+void AShooterCharacter::ReloadButtonPressed()
+{
+	ReloadWeapon();
+}
+
+void AShooterCharacter::ReloadWeapon()
+{
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+
+	if (true)
+	{
+		FName MontageSection(TEXT("Reload SMG"));
+		
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (ReloadMontage && AnimInstance)
+		{
+			AnimInstance->Montage_Play(ReloadMontage);
+			AnimInstance->Montage_JumpToSection(MontageSection);
+		}
+	}
+}
+
+void AShooterCharacter::FinishReloading()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -592,6 +619,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Select", IE_Pressed, this, &AShooterCharacter::SelectButtonPressed);
 	PlayerInputComponent->BindAction("Select", IE_Released, this, &AShooterCharacter::SelectButtonReleased);
+
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
