@@ -9,6 +9,7 @@ AWeapon::AWeapon() :
 	ThrowWeaponTime(0.7f),
 	bFalling(false),
 	Ammo(0),
+	MagazineCapacity(30),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(TEXT("Reload SMG")))
@@ -51,6 +52,11 @@ void AWeapon::ThrowWeapon()
 void AWeapon::DecrementAmmo()
 {
 	Ammo = FMath::Clamp(Ammo, 0, --Ammo);
+}
+
+void AWeapon::ReloadAmmo(int32 Amount)
+{
+	Ammo = FMath::Clamp(Ammo, Amount, MagazineCapacity);
 }
 
 void AWeapon::StopFalling()

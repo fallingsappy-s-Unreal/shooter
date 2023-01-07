@@ -578,11 +578,27 @@ void AShooterCharacter::ReloadWeapon()
 void AShooterCharacter::FinishReloading()
 {
 	CombatState = ECombatState::ECS_Unoccupied;
+
+	if (!EquippedWeapon) return;
+
+	const auto AmmoType = EquippedWeapon->GetAmmoType();
+	
+	if (AmmoMap.Contains(AmmoType))
+	{
+		int32 CarriedAmmo = AmmoMap[AmmoType];
+
+		const auto MagazineCapacity = EquippedWeapon->GetMagazineCapacity();
+		const int32 MagEmptySpace = MagazineCapacity - EquippedWeapon->GetAmmo();
+
+		const auto AmountToReload = FMath::Clamp(MagEmptySpace, MagazineCapacity, CarriedAmmo);
+		EquippedWeapon->ReloadAmmo(AmountToReload);
+		AmmoMap[AmmoType] -= AmountToReload;
+	}
 }
 
 bool AShooterCharacter::CarryingAmmo()
 {
-	if (EquippedWeapon) return false;
+	if (!EquippedWeapon) return false;
 
 	auto AmmoType = EquippedWeapon->GetAmmoType();
 
