@@ -585,14 +585,14 @@ void AShooterCharacter::FinishReloading()
 	
 	if (AmmoMap.Contains(AmmoType))
 	{
-		int32 CarriedAmmo = AmmoMap[AmmoType];
+		const int32 CarriedAmmo = AmmoMap[AmmoType];
 
 		const auto MagazineCapacity = EquippedWeapon->GetMagazineCapacity();
 		const int32 MagEmptySpace = MagazineCapacity - EquippedWeapon->GetAmmo();
 
-		const auto AmountToReload = FMath::Clamp(MagEmptySpace, MagazineCapacity, CarriedAmmo);
+		const int32 AmountToReload = FMath::Clamp(MagEmptySpace, 0, CarriedAmmo);
 		EquippedWeapon->ReloadAmmo(AmountToReload);
-		AmmoMap[AmmoType] -= AmountToReload;
+		AmmoMap.Add(AmmoType, CarriedAmmo - AmountToReload);
 	}
 }
 

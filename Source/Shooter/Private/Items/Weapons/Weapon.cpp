@@ -56,7 +56,7 @@ void AWeapon::DecrementAmmo()
 
 void AWeapon::ReloadAmmo(int32 Amount)
 {
-	Ammo = FMath::Clamp(Ammo, Amount, MagazineCapacity);
+	Ammo += FMath::Clamp(Amount, 0, MagazineCapacity);
 }
 
 void AWeapon::StopFalling()
