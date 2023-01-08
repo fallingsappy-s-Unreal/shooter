@@ -150,7 +150,7 @@ void AShooterCharacter::LookUpAtRate(float Rate)
 
 void AShooterCharacter::Turn(float Value)
 {
-	float TurnScaleFactor{};
+	float TurnScaleFactor;
 	if (bAiming)
 	{
 		TurnScaleFactor = MouseAimingTurnRate;
@@ -603,6 +603,25 @@ bool AShooterCharacter::CarryingAmmo()
 	auto AmmoType = EquippedWeapon->GetAmmoType();
 
 	return AmmoMap.Contains(AmmoType) && AmmoMap[AmmoType] > 0;
+}
+
+void AShooterCharacter::GrabClip()
+{
+	if (!EquippedWeapon) return;
+
+	const int32 ClipBoneIndex{EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName())};
+	ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
+
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+	HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("Hand_L")));
+	HandSceneComponent->SetWorldTransform(ClipTransform);
+
+	EquippedWeapon->SetMovingClip(true);
+}
+
+void AShooterCharacter::ReleaseClip()
+{
+	EquippedWeapon->SetMovingClip(true);
 }
 
 // Called every frame
