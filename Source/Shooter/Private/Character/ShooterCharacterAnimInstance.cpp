@@ -7,6 +7,12 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Shooter//Public/Character/ShooterCharacter.h"
 
+UShooterCharacterAnimInstance::UShooterCharacterAnimInstance() :
+	Speed(0.f), bIsInAir(false), bIsAccelerating(false), MovementOffsetYaw(0.f), LastMovementOffsetYaw(0.f),
+	bAiming(false), CharacterYaw(0.f), CharacterYawLastFrame(0.f)
+{
+}
+
 void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
 	if (ShooterCharacter == nullptr)
@@ -40,6 +46,8 @@ void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bAiming = ShooterCharacter->GetAiming();
 	}
+
+	TurnInPlace();
 }
 
 void UShooterCharacterAnimInstance::NativeInitializeAnimation()
@@ -47,4 +55,16 @@ void UShooterCharacterAnimInstance::NativeInitializeAnimation()
 	Super::NativeInitializeAnimation();
 
 	ShooterCharacter = ShooterCharacter == nullptr ? Cast<AShooterCharacter>(TryGetPawnOwner()) : ShooterCharacter;
+}
+
+void UShooterCharacterAnimInstance::TurnInPlace()
+{
+	if (!ShooterCharacter) return;
+	if (Speed > 0) return;
+
+	CharacterYawLastFrame = CharacterYaw;
+	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+	const float YawDelta{CharacterYaw - CharacterYawLastFrame};
+
+	RootYawOffset -= YawDelta;
 }
