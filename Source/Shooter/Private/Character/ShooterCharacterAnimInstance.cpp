@@ -9,7 +9,8 @@
 
 UShooterCharacterAnimInstance::UShooterCharacterAnimInstance() :
 	Speed(0.f), bIsInAir(false), bIsAccelerating(false), MovementOffsetYaw(0.f), LastMovementOffsetYaw(0.f),
-	bAiming(false), CharacterYaw(0.f), CharacterYawLastFrame(0.f), Pitch(0.f), bReloading(false)
+	bAiming(false), CharacterYaw(0.f), CharacterYawLastFrame(0.f), Pitch(0.f), bReloading(false),
+	OffsetState(EOffsetState::EOS_Hip)
 {
 }
 
@@ -23,7 +24,7 @@ void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	if (ShooterCharacter)
 	{
 		bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
-		
+
 		// Get the lateral speed of the character from velocity
 		FVector Velocity{ShooterCharacter->GetVelocity()};
 		Velocity.Z = 0;
@@ -47,6 +48,23 @@ void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		}
 
 		bAiming = ShooterCharacter->GetAiming();
+
+		if (bReloading)
+		{
+			OffsetState = EOffsetState::EOS_Reloading;
+		}
+		else if (bIsInAir)
+		{
+			OffsetState = EOffsetState::EOS_InAir;
+		}
+		else if (ShooterCharacter->GetAiming())
+		{
+			OffsetState = EOffsetState::EOS_Aiming;
+		}
+		else
+		{
+			OffsetState = EOffsetState::EOS_Hip;
+		}
 	}
 
 	TurnInPlace();
@@ -64,22 +82,22 @@ void UShooterCharacterAnimInstance::TurnInPlace()
 	if (!ShooterCharacter) return;
 
 	Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
-	
-	if (Speed > 0)
+
+	if (Speed > 0 || bIsInAir)
 	{
 		RootYawOffset = 0.f;
 		CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
 		CharacterYawLastFrame = CharacterYaw;
 		RotationCurveValue = 0.f;
 		RotationCurveValueLastFrame = 0.f;
-		
+
 		return;
 	}
 
 	CharacterYawLastFrame = CharacterYaw;
 	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
 	const float YawDelta{CharacterYaw - CharacterYawLastFrame};
-  
+
 	RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
 
 	const float Turning{GetCurveValue(TEXT("Turning"))};
