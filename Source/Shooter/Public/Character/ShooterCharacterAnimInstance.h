@@ -85,8 +85,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	EOffsetState OffsetState;
 
-	float CharacterYaw;
-	float CharacterYawLastFrame;
+	FRotator CharacterRotation;
+	FRotator CharacterRotationLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
 	float YawDelta;

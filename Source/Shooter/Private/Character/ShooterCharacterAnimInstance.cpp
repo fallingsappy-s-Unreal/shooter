@@ -10,7 +10,8 @@
 UShooterCharacterAnimInstance::UShooterCharacterAnimInstance() :
 	Speed(0.f), bIsInAir(false), bIsAccelerating(false), MovementOffsetYaw(0.f), LastMovementOffsetYaw(0.f),
 	bAiming(false), TIPCharacterYaw(0.f), TIPCharacterYawLastFrame(0.f), Pitch(0.f), bReloading(false),
-	OffsetState(EOffsetState::EOS_Hip)
+	OffsetState(EOffsetState::EOS_Hip), CharacterRotation(FRotator(0.f)), CharacterRotationLastFrame(FRotator(0.f)),
+	YawDelta(0.f)
 {
 }
 
@@ -124,10 +125,12 @@ void UShooterCharacterAnimInstance::Lean(float DeltaTime)
 {
 	if (ShooterCharacter == nullptr) return;
 
-	CharacterYawLastFrame = CharacterYaw;
-	CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = ShooterCharacter->GetActorRotation();
 
-	const float Target{(CharacterYaw - CharacterYawLastFrame) / DeltaTime};
+	const FRotator Delta{UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame)};
+
+	const float Target{Delta.Yaw / DeltaTime};
 
 	const float Interp{FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.f)};
 
