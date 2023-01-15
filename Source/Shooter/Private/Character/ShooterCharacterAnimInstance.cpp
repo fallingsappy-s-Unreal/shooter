@@ -67,6 +67,7 @@ void UShooterCharacterAnimInstance::TurnInPlace()
 		CharacterYawLastFrame = CharacterYaw;
 		RotationCurveValue = 0.f;
 		RotationCurveValueLastFrame = 0.f;
+		
 		return;
 	}
 
@@ -87,9 +88,9 @@ void UShooterCharacterAnimInstance::TurnInPlace()
 		RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
 
 		const float AbsRootYawOffset{FMath::Abs(RootYawOffset)};
-		if (AbsRootYawOffset > 90)
+		if (AbsRootYawOffset > 90.f)
 		{
-			const float YawExcess{AbsRootYawOffset - 90};
+			const float YawExcess{AbsRootYawOffset - 90.f};
 			RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
 		}
 	}
