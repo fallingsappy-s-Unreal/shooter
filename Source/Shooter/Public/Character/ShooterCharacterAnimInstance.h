@@ -33,6 +33,7 @@ public:
 	void UpdateAnimationProperties(float DeltaTime);
 	
 	virtual void NativeInitializeAnimation() override;
+	void SetRecoilWeight();
 
 protected:
 	

@@ -80,6 +80,46 @@ void UShooterCharacterAnimInstance::NativeInitializeAnimation()
 	ShooterCharacter = ShooterCharacter == nullptr ? Cast<AShooterCharacter>(TryGetPawnOwner()) : ShooterCharacter;
 }
 
+void UShooterCharacterAnimInstance::SetRecoilWeight()
+{
+	if (bTurningInPlace)
+	{
+		if (bReloading)
+		{
+			RecoilWeight = 1.f;
+		}
+		else
+		{
+			RecoilWeight = 0.f;
+		}
+	}
+	else
+	{
+		if (bCrouching)
+		{
+			if (bReloading)
+			{
+				RecoilWeight = 1.f;
+			}
+			else
+			{
+				RecoilWeight = 0.1f;
+			}
+		}
+		else
+		{
+			if (bAiming || bReloading)
+			{
+				RecoilWeight = 1.f;
+			}
+			else
+			{
+				RecoilWeight = 0.5f;
+			}
+		}
+	}
+}
+
 void UShooterCharacterAnimInstance::TurnInPlace()
 {
 	if (!ShooterCharacter) return;
@@ -127,42 +167,7 @@ void UShooterCharacterAnimInstance::TurnInPlace()
 		bTurningInPlace = false;
 	}
 
-	if (bTurningInPlace)
-	{
-		if (bReloading)
-		{
-			RecoilWeight = 1.f;
-		}
-		else
-		{
-			RecoilWeight = 0.f;
-		}
-	}
-	else
-	{
-		if (bCrouching)
-		{
-			if (bReloading)
-			{
-				RecoilWeight = 1.f;
-			}
-			else
-			{
-				RecoilWeight = 0.1f;
-			}
-		}
-		else
-		{
-			if (bAiming || bReloading)
-			{
-				RecoilWeight = 1.f;
-			}
-			else
-			{
-				RecoilWeight = 0.5f;
-			}
-		}
-	}
+	SetRecoilWeight();
 }
 
 void UShooterCharacterAnimInstance::Lean(float DeltaTime)
