@@ -144,6 +144,8 @@ protected:
 	void CrouchButtonPressed();
 
 	virtual void Jump() override;
+
+	void InterpCapsuleHalfHeight(float DeltaTime);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -305,12 +307,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
 	TMap<EAmmoType, int32> AmmoMap;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
-	//int32 Starting9mmAmmo;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
-	//int32 StartingARAmmo;
-
 	/** Combat State, can only fire or reload if Unoccupied */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
@@ -332,6 +328,20 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float CrouchMovementSpeed;
+
+	float CurrentCapsuleHalfHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float StandingCapsuleHalfHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float CrouchingCapsuleHalfHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float BaseGroundFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float CrouchingGroundFriction;
 public:
 	// Returns CameraBoom subobject
     FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

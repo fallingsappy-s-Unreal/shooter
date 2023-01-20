@@ -4,6 +4,7 @@
 
 #include "Shooter/Public/Items/Weapons/AmmoType.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -72,7 +73,13 @@ AShooterCharacter::AShooterCharacter() :
 	bCrouching(false),
 
 	BaseMovementSpeed(650.f),
-	CrouchMovementSpeed(300.f)
+	CrouchMovementSpeed(300.f),
+
+	StandingCapsuleHalfHeight(88.f),
+	CrouchingCapsuleHalfHeight(44.f),
+
+	BaseGroundFriction(2.f),
+	CrouchingGroundFriction(100.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -82,7 +89,7 @@ AShooterCharacter::AShooterCharacter() :
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 180.f; // The camera follows at this distance behind the character
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 45.f);
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -348,7 +355,7 @@ void AShooterCharacter::FireButtonReleased()
 void AShooterCharacter::StartFireTimer()
 {
 	CombatState = ECombatState::ECS_FireTimerInProgress;
-	
+
 	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::AutoFireReset, AutomaticFireRate);
 }
 
@@ -579,7 +586,7 @@ void AShooterCharacter::ReloadWeapon()
 	if (CarryingAmmo() && !EquippedWeapon->ClipIsFull())
 	{
 		CombatState = ECombatState::ECS_Reloading;
-		
+
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (ReloadMontage && AnimInstance)
 		{
@@ -596,7 +603,7 @@ void AShooterCharacter::FinishReloading()
 	if (!EquippedWeapon) return;
 
 	const auto AmmoType = EquippedWeapon->GetAmmoType();
-	
+
 	if (AmmoMap.Contains(AmmoType))
 	{
 		const int32 CarriedAmmo = AmmoMap[AmmoType];
@@ -648,10 +655,12 @@ void AShooterCharacter::CrouchButtonPressed()
 	if (bCrouching)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+		GetCharacterMovement()->GroundFriction = CrouchingGroundFriction;
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+		GetCharacterMovement()->GroundFriction = BaseGroundFriction;
 	}
 }
 
@@ -666,6 +675,20 @@ void AShooterCharacter::Jump()
 	{
 		Super::Jump();
 	}
+}
+
+void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime)
+{
+	float TargetCapsuleHalfHeight{bCrouching ? CrouchingCapsuleHalfHeight : StandingCapsuleHalfHeight};
+
+	const float InterpHalfHeight{
+		FMath::FInterpTo(GetCapsuleComponent()->GetScaledCapsuleHalfHeight(), TargetCapsuleHalfHeight, DeltaTime, 20.f)
+	};
+	const float DeltaCapsuleHalfHeight{InterpHalfHeight - GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
+	const FVector MeshOffset{0.f, 0.f, -DeltaCapsuleHalfHeight};
+	GetMesh()->AddLocalOffset(MeshOffset);
+	
+	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
 }
 
 // Called every frame
@@ -683,6 +706,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 	CalculateCrosshairSpread(DeltaTime);
 
 	TraceForItems();
+
+	InterpCapsuleHalfHeight(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -711,7 +736,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Select", IE_Released, this, &AShooterCharacter::SelectButtonReleased);
 
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
-	
+
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
 }
 
@@ -747,7 +772,7 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
 	{
 		UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
 	}
-	
+
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon)
 	{
