@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Items/Item.h"
+#include "Items/Ammo/Ammo.h"
 #include "Items/Weapons/Weapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -589,7 +590,7 @@ void AShooterCharacter::ReloadButtonPressed()
 void AShooterCharacter::ReloadWeapon()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	
+
 	if (!EquippedWeapon) return;
 
 	if (CarryingAmmo() && !EquippedWeapon->ClipIsFull())
@@ -706,7 +707,7 @@ void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime)
 	const float DeltaCapsuleHalfHeight{InterpHalfHeight - GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
 	const FVector MeshOffset{0.f, 0.f, -DeltaCapsuleHalfHeight};
 	GetMesh()->AddLocalOffset(MeshOffset);
-	
+
 	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
 }
 
@@ -723,6 +724,23 @@ void AShooterCharacter::StopAiming()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 	}
+}
+
+void AShooterCharacter::PickupAmmo(AAmmo* Ammo)
+{
+	if (AmmoMap.Find(Ammo->GetAmmoType()))
+	{
+		int32 AmmoCount{AmmoMap[Ammo->GetAmmoType()]};
+		AmmoCount += Ammo->GetItemCount();
+		AmmoMap[Ammo->GetAmmoType()] = AmmoCount;
+	}
+
+	if (EquippedWeapon->GetAmmoType() == Ammo->GetAmmoType() && EquippedWeapon->GetAmmo() == 0)
+	{
+		ReloadWeapon();
+	}
+
+	Ammo->Destroy();
 }
 
 // Called every frame
@@ -811,5 +829,11 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
 	if (Weapon)
 	{
 		SwapWeapon(Weapon);
+	}
+
+	auto Ammo = Cast<AAmmo>(Item);
+	if (Ammo)
+	{
+		PickupAmmo(Ammo);
 	}
 }

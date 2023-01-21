@@ -14,6 +14,7 @@ class UParticleSystem;
 class UAnimMontage;
 class AItem;
 class AWeapon;
+class AAmmo;
 
 UENUM(BlueprintType)
 enum class ECombatState : uint8
@@ -149,6 +150,8 @@ protected:
 
 	void Aim();
 	void StopAiming();
+
+	void PickupAmmo(AAmmo* Ammo);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

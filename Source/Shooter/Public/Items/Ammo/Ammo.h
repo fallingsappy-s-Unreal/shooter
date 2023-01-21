@@ -6,6 +6,8 @@
 #include "Items/Item.h"
 #include "Ammo.generated.h"
 
+enum class EAmmoType : uint8;
+
 /**
  * 
  */
@@ -24,7 +26,10 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* AmmoMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	EAmmoType AmmoType;
 public:
 	FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }
-	
+	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 };
