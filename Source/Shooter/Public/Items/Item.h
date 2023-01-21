@@ -80,15 +80,7 @@ protected:
 
 	/** Handles item interpolation when in the EquipInterping state */
 	void ItemInterp(float DeltaTime);
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
-private:
-	/** Skeletal Mesh for the item */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* ItemMesh;
-	
 	/** Line trace collides with box to show HUD widgets */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* CollisionBox;
@@ -100,6 +92,14 @@ private:
 	/** Enables item tracing when overlapped */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* AreaSphere;
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+private:
+	/** Skeletal Mesh for the item */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* ItemMesh;
 
 	/** The name which appears on the Pickup Widget */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
