@@ -3,6 +3,7 @@
 
 #include "Items/Ammo/Ammo.h"
 
+#include "Character/ShooterCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -15,6 +16,10 @@ AAmmo::AAmmo()
 	CollisionBox->SetupAttachment(GetRootComponent());
 	PickupWidget->SetupAttachment(GetRootComponent());
 	AreaSphere->SetupAttachment(GetRootComponent());
+
+	AmmoCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AmmoCollisionSphere"));
+	AmmoCollisionSphere->SetupAttachment(GetRootComponent());
+	AmmoCollisionSphere->SetSphereRadius(50.f);
 }
 
 void AAmmo::Tick(float DeltaSeconds)
@@ -25,6 +30,8 @@ void AAmmo::Tick(float DeltaSeconds)
 void AAmmo::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AmmoCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AAmmo::AmmoSphereOverlap);
 }
 
 void AAmmo::SetItemProperties(EItemState State)
@@ -69,5 +76,16 @@ void AAmmo::SetItemProperties(EItemState State)
 		break;
 	case EItemState::EIS_Max: break;
 	default: ;
+	}
+}
+
+void AAmmo::AmmoSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		const auto ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+		StartItemCurve(ShooterCharacter);
+		AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
