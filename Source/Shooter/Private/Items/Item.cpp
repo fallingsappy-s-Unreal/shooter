@@ -19,13 +19,14 @@ AItem::AItem():
 	ItemState(EItemState::EIS_Pickup),
 
 	// Item interp variables
-	ZCurveTime(0.7f),
 	ItemInterpStartLocation(FVector(0.f)),
 	CameraTargetLocation(FVector(0.f)),
 	bInterping(false),
+	ZCurveTime(0.7f),
 	ItemInterpX(0.f),
 	ItemInterpY(0.f),
-	InterpInitialYawOffset(0.f)
+	InterpInitialYawOffset(0.f),
+	ItemType(EItemType::EIT_Max)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -192,7 +193,7 @@ void AItem::ItemInterp(float DeltaTime)
 
 		FVector ItemLocation = ItemInterpStartLocation;
 		const FVector CameraInterpLocation{Character->GetCameraInterpLocation()};
-		const FVector ItemToCamera{FVector(0.f, 0.f, (CameraInterpLocation-ItemLocation).Z)};
+		const FVector ItemToCamera{FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
 
 		// Scale factor to multiply with CurveValue
 		const float DeltaZ = ItemToCamera.Size();
@@ -200,11 +201,11 @@ void AItem::ItemInterp(float DeltaTime)
 		const FVector CurrentLocation{GetActorLocation()};
 		const float InterpXValue = FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, 30.0f);
 		const float InterpYValue = FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, 30.0f);
-		
+
 		ItemLocation.Z += CurveValue * DeltaZ;
 		ItemLocation.X = InterpXValue;
 		ItemLocation.Y = InterpYValue;
-		
+
 		SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
 		const FRotator CameraRotation{Character->GetFollowCamera()->GetComponentRotation()};
 		const FRotator ItemRotation{0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f};
@@ -230,7 +231,7 @@ void AItem::SetActiveStars(const uint8 StarsToActivate)
 void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	ItemInterp(DeltaTime);
 }
 
@@ -246,7 +247,7 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
 	{
 		UGameplayStatics::PlaySound2D(this, PickupSound);
 	}
-	
+
 	// Store a handle to the Character
 	Character = Char;
 

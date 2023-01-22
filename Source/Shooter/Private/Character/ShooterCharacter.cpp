@@ -149,6 +149,8 @@ void AShooterCharacter::BeginPlay()
 	EquipWeapon(SpawnDefaultWeapon());
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+
+	InitializeInterpLocations();
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -759,6 +761,17 @@ void AShooterCharacter::PickupAmmo(AAmmo* Ammo)
 	Ammo->Destroy();
 }
 
+void AShooterCharacter::InitializeInterpLocations()
+{
+	InterpLocations.Add({ WeaponInterpComp, 0 });
+	InterpLocations.Add({ InterpComp1, 0 });
+	InterpLocations.Add({ InterpComp2, 0 });
+	InterpLocations.Add({ InterpComp3, 0 });
+	InterpLocations.Add({ InterpComp4, 0 });
+	InterpLocations.Add({ InterpComp5, 0 });
+	InterpLocations.Add({ InterpComp6, 0 });
+}
+
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -852,4 +865,14 @@ void AShooterCharacter::GetPickupItem(AItem* Item)
 	{
 		PickupAmmo(Ammo);
 	}
+}
+
+FInterpLocation AShooterCharacter::GetInterpLocation(int32 Index)
+{
+	if (Index <= InterpLocations.Num())
+	{
+		return InterpLocations[Index];
+	}
+
+	return FInterpLocation();
 }
