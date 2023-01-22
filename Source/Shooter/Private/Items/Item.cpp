@@ -26,7 +26,8 @@ AItem::AItem():
 	ItemInterpX(0.f),
 	ItemInterpY(0.f),
 	InterpInitialYawOffset(0.f),
-	ItemType(EItemType::EIT_Max)
+	ItemType(EItemType::EIT_Max),
+	InterpLocIndex(0)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -178,6 +179,7 @@ void AItem::FinishInterping()
 	if (Character)
 	{
 		Character->GetPickupItem(this);
+		Character->IncrementInterLocItemCount(InterpLocIndex, -1);
 	}
 	SetActorScale3D(FVector(1.f, 1.f, 1.f));
 }
@@ -192,7 +194,7 @@ void AItem::ItemInterp(float DeltaTime)
 		const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
 
 		FVector ItemLocation = ItemInterpStartLocation;
-		const FVector CameraInterpLocation{Character->GetCameraInterpLocation()};
+		const FVector CameraInterpLocation{GetInterpLocation()};
 		const FVector ItemToCamera{FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
 
 		// Scale factor to multiply with CurveValue
@@ -227,6 +229,21 @@ void AItem::SetActiveStars(const uint8 StarsToActivate)
 	}
 }
 
+FVector AItem::GetInterpLocation()
+{
+	if (Character == nullptr) return FVector(0.f);
+
+	switch (ItemType)
+	{
+	case EItemType::EIT_Ammo:
+		return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
+	case EItemType::EIT_Weapon:
+		return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+	}
+
+	return FVector(0.f);
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -251,8 +268,11 @@ void AItem::StartItemCurve(AShooterCharacter* Char)
 	// Store a handle to the Character
 	Character = Char;
 
+	InterpLocIndex = Character->GetInterpLocationIndex();
+
 	// Store initial location of the item
 	ItemInterpStartLocation = GetActorLocation();
+	Character->IncrementInterLocItemCount(InterpLocIndex, 1);
 
 	bInterping = true;
 	SetItemState(EItemState::EIS_EquipInterping);

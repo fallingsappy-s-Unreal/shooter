@@ -400,11 +400,11 @@ public:
 	/** Adds/subtracts to/from OverlappedItemCount and updates bShouldTraceForItems */
 	void IncrementOverlappedItemCount(int8 Amount);
 
-	FVector GetCameraInterpLocation();
-
 	void GetPickupItem(AItem* Item);
 
 	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
 	FORCEINLINE bool GetCrouching() const { return bCrouching; }
 	FInterpLocation GetInterpLocation(int32 Index);
+	int32 GetInterpLocationIndex();
+	void IncrementInterLocItemCount(int32 Index, int32 Amount);
 };
