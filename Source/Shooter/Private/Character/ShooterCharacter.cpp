@@ -82,7 +82,14 @@ AShooterCharacter::AShooterCharacter() :
 	BaseGroundFriction(2.f),
 	CrouchingGroundFriction(100.f),
 
-	bAimingButtonPressed(false)
+	bAimingButtonPressed(false),
+
+	// Pickup sound timer properties
+	bShouldPlayEquipSound(true),
+	bShouldPlayPickupSound(true),
+
+	PickupSoundCooldown(0.2f),
+	EquipSoundCooldown(0.2f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -763,13 +770,13 @@ void AShooterCharacter::PickupAmmo(AAmmo* Ammo)
 
 void AShooterCharacter::InitializeInterpLocations()
 {
-	InterpLocations.Add({ WeaponInterpComp, 0 });
-	InterpLocations.Add({ InterpComp1, 0 });
-	InterpLocations.Add({ InterpComp2, 0 });
-	InterpLocations.Add({ InterpComp3, 0 });
-	InterpLocations.Add({ InterpComp4, 0 });
-	InterpLocations.Add({ InterpComp5, 0 });
-	InterpLocations.Add({ InterpComp6, 0 });
+	InterpLocations.Add({WeaponInterpComp, 0});
+	InterpLocations.Add({InterpComp1, 0});
+	InterpLocations.Add({InterpComp2, 0});
+	InterpLocations.Add({InterpComp3, 0});
+	InterpLocations.Add({InterpComp4, 0});
+	InterpLocations.Add({InterpComp5, 0});
+	InterpLocations.Add({InterpComp6, 0});
 }
 
 int32 AShooterCharacter::GetInterpLocationIndex()
@@ -797,6 +804,28 @@ void AShooterCharacter::IncrementInterLocItemCount(int32 Index, int32 Amount)
 	{
 		InterpLocations[Index].ItemCount += Amount;
 	}
+}
+
+void AShooterCharacter::StartPickupSoundTimer()
+{
+	bShouldPlayPickupSound = false;
+	GetWorldTimerManager().SetTimer(
+		PickupSoundTimer,
+		this,
+		&AShooterCharacter::ResetPickupSoundTimer,
+		PickupSoundCooldown
+	);
+}
+
+void AShooterCharacter::StartEquipSoundTimer()
+{
+	bShouldPlayEquipSound = false;
+	GetWorldTimerManager().SetTimer(
+		EquipSoundTimer,
+		this,
+		&AShooterCharacter::ResetPickupSoundTimer,
+		EquipSoundCooldown
+	);
 }
 
 // Called every frame
@@ -848,6 +877,16 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
 }
 
+void AShooterCharacter::ResetPickupSoundTimer()
+{
+	bShouldPlayPickupSound = true;
+}
+
+void AShooterCharacter::ResetEquipSoundTimer()
+{
+	bShouldPlayEquipSound = true;
+}
+
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
 {
 	return CrosshairSpreadMultiplier;
@@ -867,10 +906,7 @@ void AShooterCharacter::IncrementOverlappedItemCount(int8 Amount)
 
 void AShooterCharacter::GetPickupItem(AItem* Item)
 {
-	if (Item->GetEquipSound())
-	{
-		UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
-	}
+	Item->PlayEquipSound();
 
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon)

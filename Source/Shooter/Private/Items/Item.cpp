@@ -244,6 +244,30 @@ FVector AItem::GetInterpLocation()
 	return FVector(0.f);
 }
 
+void AItem::PlayPickupSound()
+{
+	if (Character && Character->ShouldPlayPickupSound())
+	{
+		Character->StartPickupSoundTimer();
+		if (PickupSound)
+		{
+			UGameplayStatics::PlaySound2D(this, PickupSound);
+		}
+	}
+}
+
+void AItem::PlayEquipSound()
+{
+	if (Character && Character->ShouldPlayEquipSound())
+	{
+		Character->StartEquipSoundTimer();
+		if (EquipSound)
+		{
+			UGameplayStatics::PlaySound2D(this, EquipSound);
+		}
+	}
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime)
 {
@@ -260,10 +284,7 @@ void AItem::SetItemState(EItemState State)
 
 void AItem::StartItemCurve(AShooterCharacter* Char)
 {
-	if (PickupSound)
-	{
-		UGameplayStatics::PlaySound2D(this, PickupSound);
-	}
+	PlayPickupSound();
 
 	// Store a handle to the Character
 	Character = Char;
