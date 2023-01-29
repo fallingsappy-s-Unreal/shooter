@@ -111,6 +111,8 @@ protected:
 
 	void EnableGlowMaterial();
 	void DisableGlowMaterial();
+
+	bool bCanChangeCustomDepth;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
