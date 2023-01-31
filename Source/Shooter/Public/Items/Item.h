@@ -12,6 +12,7 @@ class USphereComponent;
 class UCurveFloat;
 class AShooterCharacter;
 class USoundCue;
+class UCurveVector;
 
 UENUM(BlueprintType)
 enum class EItemRarity : uint8
@@ -110,9 +111,11 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	void EnableGlowMaterial();
-	void DisableGlowMaterial();
 
 	bool bCanChangeCustomDepth;
+
+	void UpdatePulse();
+	void ResetPulseTimer();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -199,6 +202,23 @@ private:
 	/** Material instance used with the Dynamic Material instance */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UMaterialInstance* MaterialInstance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UCurveVector* PulseCurve;
+
+	FTimerHandle PulseTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float PulseCurveTime;
+
+	UPROPERTY(VisibleAnywhere, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float GlowAmount;
+
+	UPROPERTY(VisibleAnywhere, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float FresnelExponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float FresnelReflectFraction;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
@@ -215,4 +235,5 @@ public:
 
 	virtual void EnableCustomDepth();
 	virtual void DisableCustomDepth();
+	void DisableGlowMaterial();
 };
