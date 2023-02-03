@@ -99,7 +99,7 @@ protected:
 	void CalculateCrosshairSpread(float DeltaTime);
 
 	void StartCrosshairBulletFire();
-	
+
 	UFUNCTION()
 	void FinishCrosshairBulletFire();
 
@@ -119,7 +119,7 @@ protected:
 
 	/** Spawns a default weapons and equips it */
 	AWeapon* SpawnDefaultWeapon() const;
-	
+
 	/** Takes a weapon and attaches it to the mesh */
 	void EquipWeapon(AWeapon* WeaponToEquip);
 
@@ -130,7 +130,7 @@ protected:
 
 	/** Drops currently equipped weapon and equips new one */
 	void SwapWeapon(AWeapon* WeaponToSwap);
-	
+
 	bool WeaponHasAmmo() const;
 
 	/** FireWeapon functions */
@@ -138,7 +138,7 @@ protected:
 	void SendBullet();
 	void PlayGunFireMontage();
 
-	
+
 	void ReloadButtonPressed();
 
 	void ReloadWeapon();
@@ -166,7 +166,7 @@ protected:
 	void PickupAmmo(AAmmo* Ammo);
 
 	void InitializeInterpLocations();
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -206,21 +206,25 @@ private:
 	float AimingLookUpRate;
 
 	// Scale factor for mouse look sensitivity. Turn rate when not aiming 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MouseHipTurnRate;
 
 	// Scale factor for mouse look sensitivity. Look up rate when not aiming
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MouseHipLookUpRate;
 
 	// Scale factor for mouse look sensitivity. Turn rate when aiming 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MouseAimingTurnRate;
 
 	// Scale factor for mouse look sensitivity. Look up rate when aiming
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"),
+		meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float MouseAimingLookUpRate;
-	
+
 	/** Randomized gunshot sound cue */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USoundCue* FireSound;
@@ -382,7 +386,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* InterpComp6;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true") )
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FInterpLocation> InterpLocations;
 
 	FTimerHandle PickupSoundTimer;
@@ -398,9 +402,14 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float EquipSoundCooldown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	TArray<AItem*> Inventory;
+
+	const int32 INVENTORY_CAPACITY{5};
 public:
 	// Returns CameraBoom subobject
-    FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	// Returns FollowCamera subobject
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
