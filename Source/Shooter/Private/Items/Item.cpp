@@ -275,11 +275,11 @@ FVector AItem::GetInterpLocation()
 	return FVector(0.f);
 }
 
-void AItem::PlayPickupSound()
+void AItem::PlayPickupSound(bool bForcePlaySound)
 {
-	if (Character && Character->ShouldPlayPickupSound())
+	if (Character && (Character->ShouldPlayPickupSound() || bForcePlaySound))
 	{
-		Character->StartPickupSoundTimer();
+		if (!bForcePlaySound) Character->StartPickupSoundTimer();
 		if (PickupSound)
 		{
 			UGameplayStatics::PlaySound2D(this, PickupSound);
@@ -336,11 +336,11 @@ void AItem::DisableGlowMaterial()
 	}
 }
 
-void AItem::PlayEquipSound()
+void AItem::PlayEquipSound(bool bForcePlaySound)
 {
-	if (Character && Character->ShouldPlayEquipSound())
+	if (Character && (Character->ShouldPlayEquipSound() || bForcePlaySound))
 	{
-		Character->StartEquipSoundTimer();
+		if (!bForcePlaySound) Character->StartEquipSoundTimer();
 		if (EquipSound)
 		{
 			UGameplayStatics::PlaySound2D(this, EquipSound);
@@ -401,9 +401,9 @@ void AItem::SetItemState(EItemState State)
 	SetItemProperties(State);
 }
 
-void AItem::StartItemCurve(AShooterCharacter* Char)
+void AItem::StartItemCurve(AShooterCharacter* Char, bool bForcePlaySound)
 {
-	PlayPickupSound();
+	PlayPickupSound(bForcePlaySound);
 
 	// Store a handle to the Character
 	Character = Char;
