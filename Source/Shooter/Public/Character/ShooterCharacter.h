@@ -424,7 +424,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> Inventory;
 
-	const int32 INVENTORY_CAPACITY{5};
+	const int32 INVENTORY_CAPACITY{6};
 
 	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
 	FEquipItemDelegate EquipItemDelegate;
