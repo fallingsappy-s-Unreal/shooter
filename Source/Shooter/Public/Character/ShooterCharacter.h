@@ -124,7 +124,7 @@ protected:
 	AWeapon* SpawnDefaultWeapon() const;
 
 	/** Takes a weapon and attaches it to the mesh */
-	void EquipWeapon(AWeapon* WeaponToEquip);
+	void EquipWeapon(AWeapon* WeaponToEquip, bool bSwapping = false);
 
 	void DropWeapon();
 
