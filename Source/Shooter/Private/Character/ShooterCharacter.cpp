@@ -551,6 +551,7 @@ void AShooterCharacter::DropWeapon()
 
 void AShooterCharacter::SelectButtonPressed()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (TraceHitItem)
 	{
 		TraceHitItem->StartItemCurve(this);
@@ -854,6 +855,7 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 {
 	if (CurrentItemIndex == NewItemIndex) return;
 	if (NewItemIndex >= Inventory.Num()) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
 
 	auto OldEquippedWeapon = EquippedWeapon;
 	auto NewWeapon = Cast<AWeapon>(Inventory[NewItemIndex]);
