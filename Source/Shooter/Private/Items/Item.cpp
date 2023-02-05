@@ -206,7 +206,6 @@ void AItem::FinishInterping()
 	{
 		Character->GetPickupItem(this);
 		Character->IncrementInterLocItemCount(InterpLocIndex, -1);
-		SetItemState(EItemState::EIS_PickedUp);
 	}
 	SetActorScale3D(FVector(1.f, 1.f, 1.f));
 
