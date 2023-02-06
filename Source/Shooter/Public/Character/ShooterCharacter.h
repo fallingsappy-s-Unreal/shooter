@@ -181,6 +181,10 @@ protected:
 	void FiveKeyPressed();
 
 	void ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex);
+
+	int32 GetEmptyInventorySlotIndex();
+
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
