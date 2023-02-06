@@ -185,7 +185,8 @@ protected:
 
 	int32 GetEmptyInventorySlotIndex();
 
-	
+	void HighlightInventorySlot();
+	void UnHighlightInventorySlot();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -436,6 +437,9 @@ private:
 
 	UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
 	FHighlightIconDelegate HighlightIconDelegate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	int32 HighlightedSlotIndex;
 public:
 	// Returns CameraBoom subobject
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

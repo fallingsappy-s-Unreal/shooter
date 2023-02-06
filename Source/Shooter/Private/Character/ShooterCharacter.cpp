@@ -89,7 +89,9 @@ AShooterCharacter::AShooterCharacter() :
 	bShouldPlayPickupSound(true),
 
 	PickupSoundCooldown(0.2f),
-	EquipSoundCooldown(0.2f)
+	EquipSoundCooldown(0.2f),
+
+	HighlightedSlotIndex(-1)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -471,7 +473,7 @@ void AShooterCharacter::TraceForItems()
 			{
 				TraceHitItem = nullptr;
 			}
-			
+
 			if (TraceHitItem && TraceHitItem->GetPickupWidget())
 			{
 				// Show Item's Pickup Widget
@@ -572,7 +574,7 @@ void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 		Inventory[EquippedWeapon->GetSlotIndex()] = WeaponToSwap;
 		WeaponToSwap->SetSlotIndex(EquippedWeapon->GetSlotIndex());
 	}
-	
+
 	DropWeapon();
 	EquipWeapon(WeaponToSwap, true);
 	TraceHitItem = nullptr;
@@ -898,6 +900,19 @@ int32 AShooterCharacter::GetEmptyInventorySlotIndex()
 	return -1;
 }
 
+void AShooterCharacter::HighlightInventorySlot()
+{
+	const int32 EmptySlot{GetEmptyInventorySlotIndex()};
+	HighlightIconDelegate.Broadcast(EmptySlot, true);
+	HighlightedSlotIndex = EmptySlot;
+}
+
+void AShooterCharacter::UnHighlightInventorySlot()
+{
+	HighlightIconDelegate.Broadcast(HighlightedSlotIndex, false);
+	HighlightedSlotIndex = -1;
+}
+
 int32 AShooterCharacter::GetInterpLocationIndex()
 {
 	int32 LowestIndex = 1;
@@ -994,7 +1009,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
 
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
-	
+
 	PlayerInputComponent->BindAction("FKey", IE_Pressed, this, &AShooterCharacter::FKeyPressed);
 	PlayerInputComponent->BindAction("OneKey", IE_Pressed, this, &AShooterCharacter::OneKeyPressed);
 	PlayerInputComponent->BindAction("TwoKey", IE_Pressed, this, &AShooterCharacter::TwoKeyPressed);
