@@ -186,7 +186,6 @@ protected:
 	int32 GetEmptyInventorySlotIndex();
 
 	void HighlightInventorySlot();
-	void UnHighlightInventorySlot();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -469,4 +468,6 @@ public:
 
 	void StartPickupSoundTimer();
 	void StartEquipSoundTimer();
+
+	void UnHighlightInventorySlot();
 };
