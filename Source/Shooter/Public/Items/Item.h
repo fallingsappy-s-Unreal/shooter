@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "Item.generated.h"
 
 class UBoxComponent;
@@ -13,6 +14,7 @@ class UCurveFloat;
 class AShooterCharacter;
 class USoundCue;
 class UCurveVector;
+class UDataTable;
 
 UENUM(BlueprintType)
 enum class EItemRarity : uint8
@@ -45,6 +47,27 @@ enum class EItemType : uint8
 	EIT_Weapon UMETA(DisplayName = "Weapon"),
 
 	EIT_Max UMETA(DisplayName = "DefaultMax")
+};
+
+USTRUCT(BlueprintType)
+struct FItemRarityTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor GlowColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor LightColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor DarkColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NumberOfStarts;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* IconBackground;
 };
 
 UCLASS()
@@ -237,6 +260,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	bool bCharacterInventoryFull;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UDataTable* ItemRarityDataTable;
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const { return PickupWidget; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
