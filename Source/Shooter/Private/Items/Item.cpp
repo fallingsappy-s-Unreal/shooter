@@ -77,7 +77,7 @@ void AItem::BeginPlay()
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
 	SetItemProperties(ItemState);
-	
+
 	InitializeCustomDepth();
 
 	ResetPulseTimer();
@@ -325,10 +325,38 @@ void AItem::OnConstruction(const FTransform& Transform)
 
 	// Load the data in the Item Rarity Data Table
 	FString RarityTablePath(TEXT("DataTable'/Game/_Game/DataTables/ItemRarityDataTable.ItemRarityDataTable'"));
-	UDataTable* RarityTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *RarityTablePath));
+	UDataTable* RarityTableObject = Cast<UDataTable>(
+		StaticLoadObject(UDataTable::StaticClass(), nullptr, *RarityTablePath));
 	if (RarityTableObject)
 	{
-		
+		FItemRarityTable* RarityRow = nullptr;
+		switch (ItemRarity)
+		{
+		case EItemRarity::EIR_Damaged:
+			RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName("Damaged"), TEXT(""));
+			break;
+		case EItemRarity::EIR_Common:
+			RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName("Common"), TEXT(""));
+			break;
+		case EItemRarity::EIR_Uncommon:
+			RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName("Uncommon"), TEXT(""));
+			break;
+		case EItemRarity::EIR_Rare:
+			RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName("Rare"), TEXT(""));
+			break;
+		case EItemRarity::EIR_Legendary:
+			RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName("Legendary"), TEXT(""));
+			break;
+		}
+
+		if (RarityRow)
+		{
+			GlowColor = RarityRow->GlowColor;
+			LightColor = RarityRow->LightColor;
+			DarkColor = RarityRow->DarkColor;
+			NumberOfStars = RarityRow->NumberOfStarts;
+			IconBackground = RarityRow->IconBackground;
+		}
 	}
 }
 
@@ -364,29 +392,31 @@ void AItem::UpdatePulse()
 {
 	float ElapsedTime{};
 	FVector CurveValue{};
-	
-	switch (ItemState) {
-		case EItemState::EIS_Pickup:
-			if (PulseCurve)
-			{
-				ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
-				CurveValue = PulseCurve->GetVectorValue(ElapsedTime);
-			}
-			break;
-		case EItemState::EIS_EquipInterping:
-			if (InterpPulseCurve)
-			{
-				ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
-				CurveValue = InterpPulseCurve->GetVectorValue(ElapsedTime);
-			}
-			break;
+
+	switch (ItemState)
+	{
+	case EItemState::EIS_Pickup:
+		if (PulseCurve)
+		{
+			ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
+			CurveValue = PulseCurve->GetVectorValue(ElapsedTime);
+		}
+		break;
+	case EItemState::EIS_EquipInterping:
+		if (InterpPulseCurve)
+		{
+			ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+			CurveValue = InterpPulseCurve->GetVectorValue(ElapsedTime);
+		}
+		break;
 	}
 
 	if (DynamicMaterialInstance)
 	{
 		DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowAmount"), CurveValue.X * GlowAmount);
 		DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelExponent"), CurveValue.Y * FresnelExponent);
-		DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelReflectFraction"), CurveValue.Z * FresnelReflectFraction);
+		DynamicMaterialInstance->SetScalarParameterValue(
+			TEXT("FresnelReflectFraction"), CurveValue.Z * FresnelReflectFraction);
 	}
 }
 
