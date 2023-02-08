@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Items/Item.h"
+#include "Engine/DataTable.h"
 #include "Weapon.generated.h"
 
 enum class EAmmoType : uint8;
+class USoundCue;
+class UWidgetComponent;
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
@@ -14,6 +17,42 @@ enum class EWeaponType : uint8
 	EWT_SubmachineGun UMETA(DisplayName = "SubmachineGun"),
 	EWT_AssaultRifle UMETA(DisplayName = "AssaultRifle"),
 	EWT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT()
+struct FWeaponDataTable : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 WeaponAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MagazineCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundCue* PickupSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundCue* EquipSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidgetComponent* PickupWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMesh* ItemMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ItemName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* InventoryIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* AmmoIcon;
 };
 
 /**
@@ -54,6 +93,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ClipBoneName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UDataTable* WeaponDataTable;
 public:
 	void ThrowWeapon();
 
