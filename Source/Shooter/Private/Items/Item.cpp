@@ -316,13 +316,6 @@ void AItem::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	if (MaterialInstance)
-	{
-		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
-		ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
-	}
-	EnableGlowMaterial();
-
 	// Load the data in the Item Rarity Data Table
 	FString RarityTablePath(TEXT("DataTable'/Game/_Game/DataTables/ItemRarityDataTable.ItemRarityDataTable'"));
 	UDataTable* RarityTableObject = Cast<UDataTable>(
@@ -357,6 +350,14 @@ void AItem::OnConstruction(const FTransform& Transform)
 			NumberOfStars = RarityRow->NumberOfStarts;
 			IconBackground = RarityRow->IconBackground;
 		}
+	}
+
+	if (MaterialInstance)
+	{
+		DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
+		DynamicMaterialInstance->SetVectorParameterValue(TEXT("FresnelColor"), GlowColor);
+		ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+		EnableGlowMaterial();
 	}
 }
 
