@@ -105,6 +105,19 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			SetItemName(WeaponDataRow->ItemName);
 			SetIconAmmo(WeaponDataRow->AmmoIcon);
 			SetIconItem(WeaponDataRow->InventoryIcon);
+			SetMaterialInstance(WeaponDataRow->MaterialInstance);
+
+			PreviousMaterialIndex = GetMaterialIndex();
+			GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+			SetMaterialIndex(WeaponDataRow->MaterialIndex);
+		}
+
+		if (GetMaterialInstance())
+		{
+			SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
+			GetDynamicMaterialInstance()->SetVectorParameterValue(TEXT("FresnelColor"), GetGlowColor());
+			GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+			EnableGlowMaterial();
 		}
 	}
 }
