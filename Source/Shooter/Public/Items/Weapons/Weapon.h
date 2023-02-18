@@ -49,6 +49,9 @@ struct FWeaponDataTable : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaterialIndex;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName ClipBoneName;
 };
 
 /**

@@ -5,6 +5,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Weapons/WeaponType.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Shooter/Public/Character/ShooterCharacter.h"
 
@@ -12,7 +13,8 @@ UShooterCharacterAnimInstance::UShooterCharacterAnimInstance() :
 	Speed(0.f), bIsInAir(false), bIsAccelerating(false), MovementOffsetYaw(0.f), LastMovementOffsetYaw(0.f),
 	bAiming(false), TIPCharacterYaw(0.f), TIPCharacterYawLastFrame(0.f), Pitch(0.f), bReloading(false),
 	OffsetState(EOffsetState::EOS_Hip), CharacterRotation(FRotator(0.f)), CharacterRotationLastFrame(FRotator(0.f)),
-	YawDelta(0.f), RecoilWeight(1.f), bTurningInPlace(false)
+	YawDelta(0.f), RecoilWeight(1.f), bTurningInPlace(false), EquippedWeaponType(EWeaponType::EWT_MAX),
+	bUseFABRIK(false)
 {
 }
 
@@ -28,6 +30,8 @@ void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		bCrouching = ShooterCharacter->GetCrouching();
 		bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+		bUseFABRIK = ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied || ShooterCharacter->
+			GetCombatState() == ECombatState::ECS_FireTimerInProgress;
 
 		// Get the lateral speed of the character from velocity
 		FVector Velocity{ShooterCharacter->GetVelocity()};
@@ -150,7 +154,7 @@ void UShooterCharacterAnimInstance::TurnInPlace()
 	RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
 
 	const float Turning{GetCurveValue(TEXT("Turning"))};
-	
+
 	if (Turning > 0)
 	{
 		bTurningInPlace = true;
