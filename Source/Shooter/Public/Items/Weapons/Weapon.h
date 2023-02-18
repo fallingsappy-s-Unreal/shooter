@@ -52,6 +52,9 @@ struct FWeaponDataTable : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ClipBoneName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName ReloadMontageSection;
 };
 
 /**
