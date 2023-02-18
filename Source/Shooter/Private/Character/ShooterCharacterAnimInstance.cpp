@@ -4,8 +4,9 @@
 #include "Shooter/Public/Character/ShooterCharacterAnimInstance.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Items/Weapons/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Shooter//Public/Character/ShooterCharacter.h"
+#include "Shooter/Public/Character/ShooterCharacter.h"
 
 UShooterCharacterAnimInstance::UShooterCharacterAnimInstance() :
 	Speed(0.f), bIsInAir(false), bIsAccelerating(false), MovementOffsetYaw(0.f), LastMovementOffsetYaw(0.f),
@@ -67,6 +68,10 @@ void UShooterCharacterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		else
 		{
 			OffsetState = EOffsetState::EOS_Hip;
+		}
+		if (ShooterCharacter->GetEquippedWeapon())
+		{
+			EquippedWeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
 		}
 	}
 

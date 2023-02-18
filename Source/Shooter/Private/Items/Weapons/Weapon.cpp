@@ -2,7 +2,7 @@
 
 
 #include "Items/Weapons/Weapon.h"
-
+#include "Items/Weapons/WeaponType.h"
 #include "Items/Weapons/AmmoType.h"
 
 AWeapon::AWeapon() :

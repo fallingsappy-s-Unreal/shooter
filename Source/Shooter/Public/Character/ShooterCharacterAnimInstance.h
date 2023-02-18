@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "ShooterCharacterAnimInstance.generated.h"
+
 class AShooterCharacter;
+enum class EWeaponType : uint8;
 
 UENUM(BlueprintType)
 enum class EOffsetState : uint8
@@ -103,4 +105,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool bEquipping;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	EWeaponType EquippedWeaponType;
 };
