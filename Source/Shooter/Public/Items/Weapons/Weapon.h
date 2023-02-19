@@ -11,6 +11,7 @@ enum class EAmmoType : uint8;
 enum class EWeaponType : uint8;
 class USoundCue;
 class UWidgetComponent;
+class UParticleSystem;
 
 USTRUCT()
 struct FWeaponDataTable : public FTableRowBase
@@ -73,6 +74,15 @@ struct FWeaponDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UTexture2D* CrosshairsTop;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float AutoFireRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundCue* FireSound;
 };
 
 /**
@@ -135,6 +145,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
 	UTexture2D* CrosshairsTop;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	float AutoFireRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+	USoundCue* FireSound;
 public:
 	void ThrowWeapon();
 
