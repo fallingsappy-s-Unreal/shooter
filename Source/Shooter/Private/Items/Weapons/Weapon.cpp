@@ -128,6 +128,10 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			FireSound = WeaponDataRow->FireSound;
 
 			BoneToHide = WeaponDataRow->BoneToHide;
+            if (BoneToHide != FName(""))
+            {
+                GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
+            }
 		}
 
 		if (GetMaterialInstance())
@@ -143,9 +147,5 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (BoneToHide != FName(""))
-	{
-		GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
-	}
+	AWeapon::OnConstruction(this->GetTransform());
 }
