@@ -171,6 +171,8 @@ private:
 	UCurveFloat* SlideDisplacementCurve;
 	
 	FTimerHandle SlideTimer;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
 	float SlideDisplacementTime;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
@@ -178,6 +180,12 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
 	float MaxSlideDisplacement;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+	float MaxRecoilRotation;
+	
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float RecoilRotation;
 public:
 	void ThrowWeapon();
 
