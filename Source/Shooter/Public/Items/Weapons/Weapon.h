@@ -105,6 +105,7 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 	void FinishMovingSlide();
+	void UpdateSlideDisplacement();
 private:
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;

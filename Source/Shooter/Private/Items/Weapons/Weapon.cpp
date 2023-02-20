@@ -32,6 +32,8 @@ void AWeapon::Tick(float DeltaSeconds)
 		const FRotator MeshRotation{0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f};
 		GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
 	}
+
+	UpdateSlideDisplacement();
 }
 
 void AWeapon::ThrowWeapon()
@@ -126,7 +128,7 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			ClipBoneName = WeaponDataRow->ClipBoneName;
 			ReloadMontageSection = WeaponDataRow->ReloadMontageSection;
 			GetItemMesh()->SetAnimInstanceClass(WeaponDataRow->AnimBP);
-			
+
 			CrosshairsMiddle = WeaponDataRow->CrosshairsMiddle;
 			CrosshairsLeft = WeaponDataRow->CrosshairsLeft;
 			CrosshairsRight = WeaponDataRow->CrosshairsRight;
@@ -138,10 +140,10 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 			FireSound = WeaponDataRow->FireSound;
 
 			BoneToHide = WeaponDataRow->BoneToHide;
-            if (BoneToHide != FName(""))
-            {
-                GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
-            }
+			if (BoneToHide != FName(""))
+			{
+				GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
+			}
 		}
 
 		if (GetMaterialInstance())
@@ -163,4 +165,14 @@ void AWeapon::BeginPlay()
 void AWeapon::FinishMovingSlide()
 {
 	bMovingSlide = false;
+}
+
+void AWeapon::UpdateSlideDisplacement()
+{
+	if (SlideDisplacementCurve && bMovingSlide)
+	{
+		const float ElapsedTime{GetWorldTimerManager().GetTimerElapsed(SlideTimer)};
+		const float CurveValue{SlideDisplacementCurve->GetFloatValue(ElapsedTime)};
+		SlideDisplacement = CurveValue * MaxSlideDisplacement;
+	}
 }
