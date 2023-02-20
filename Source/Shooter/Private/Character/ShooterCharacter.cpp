@@ -12,6 +12,7 @@
 #include "Items/Item.h"
 #include "Items/Ammo/Ammo.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Weapons/WeaponType.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
@@ -249,6 +250,11 @@ void AShooterCharacter::FireWeapon()
 	StartCrosshairBulletFire();
 	EquippedWeapon->DecrementAmmo();
 	StartFireTimer();
+
+	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol)
+	{
+		EquippedWeapon->StartSlideTimer();
+	}
 }
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation)
