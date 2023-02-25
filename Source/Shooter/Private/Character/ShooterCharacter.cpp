@@ -15,6 +15,8 @@
 #include "Items/Weapons/WeaponType.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Shooter/Shooter.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -953,6 +955,12 @@ void AShooterCharacter::Footstep()
 	QueryParams.bReturnPhysicalMaterial = true;
 	
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
+
+	auto HitSurface = HitResult.PhysMaterial->SurfaceType;
+	if (HitSurface == EPS_Grass)
+	{
+		
+	}
 }
 
 void AShooterCharacter::UnHighlightInventorySlot()
