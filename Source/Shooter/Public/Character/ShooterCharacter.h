@@ -186,6 +186,9 @@ protected:
 	int32 GetEmptyInventorySlotIndex();
 
 	void HighlightInventorySlot();
+
+	UFUNCTION(BlueprintCallable)
+	void Footstep();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
