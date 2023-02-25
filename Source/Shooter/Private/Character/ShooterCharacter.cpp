@@ -946,7 +946,7 @@ void AShooterCharacter::HighlightInventorySlot()
 	HighlightedSlotIndex = EmptySlot;
 }
 
-void AShooterCharacter::Footstep()
+EPhysicalSurface AShooterCharacter::GetSurfaceType()
 {
 	FHitResult HitResult;
 	const FVector Start{GetActorLocation()};
@@ -956,11 +956,7 @@ void AShooterCharacter::Footstep()
 	
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
 
-	auto HitSurface = HitResult.PhysMaterial->SurfaceType;
-	if (HitSurface == EPS_Grass)
-	{
-		
-	}
+	return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }
 
 void AShooterCharacter::UnHighlightInventorySlot()
