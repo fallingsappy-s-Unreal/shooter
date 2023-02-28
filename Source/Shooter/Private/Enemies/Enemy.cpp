@@ -11,11 +11,17 @@ AEnemy::AEnemy()
 
 }
 
+void AEnemy::BulletHit_Implementation(FHitResult HitResult)
+{
+	IBulletHitInterface::BulletHit_Implementation(HitResult);
+}
+
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 }
 
 // Called every frame
