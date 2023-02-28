@@ -90,7 +90,7 @@ protected:
 	 */
 	void FireWeapon();
 
-	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamLocation);
+	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
 
 	/** Set bAiming to true or false with button pressed */
 	void AimingButtonPressed();

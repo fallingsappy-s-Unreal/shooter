@@ -3,6 +3,9 @@
 
 #include "Enemies/Enemy.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -14,6 +17,22 @@ AEnemy::AEnemy()
 void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 {
 	IBulletHitInterface::BulletHit_Implementation(HitResult);
+
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	}
+
+	if (ImpactParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			ImpactParticles,
+			HitResult.Location,
+			FRotator(0.f),
+			true
+		);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +54,5 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
