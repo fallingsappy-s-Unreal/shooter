@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemies/BulletHitInterface.h"
+#include "Enemies/Enemy.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -650,6 +651,18 @@ void AShooterCharacter::SendBullet()
 			if (BulletHitInterface)
 			{
 				BulletHitInterface->BulletHit_Implementation(BeamHitResult);
+			}
+
+			AEnemy* HitEnemy = Cast<AEnemy>(BeamHitResult.GetActor());
+			if (HitEnemy)
+			{
+				UGameplayStatics::ApplyDamage(
+					BeamHitResult.GetActor(),
+					EquippedWeapon->GetDamage(),
+					GetController(),
+					this,
+					UDamageType::StaticClass()
+				);
 			}
 		}
 		else
