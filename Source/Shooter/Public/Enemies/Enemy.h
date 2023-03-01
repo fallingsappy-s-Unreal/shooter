@@ -25,10 +25,11 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ShowHealthBar();
-	//void ShowHealthBar_Implementation();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HideHealthBar();
+
+	void Die();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
