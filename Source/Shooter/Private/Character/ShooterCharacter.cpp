@@ -412,10 +412,11 @@ void AShooterCharacter::FireButtonReleased()
 void AShooterCharacter::StartFireTimer()
 {
 	if (!EquippedWeapon) return;
-	
+
 	CombatState = ECombatState::ECS_FireTimerInProgress;
 
-	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::AutoFireReset, EquippedWeapon->GetAutoFireRate());
+	GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::AutoFireReset,
+	                                EquippedWeapon->GetAutoFireRate());
 }
 
 void AShooterCharacter::AutoFireReset()
@@ -423,7 +424,7 @@ void AShooterCharacter::AutoFireReset()
 	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (EquippedWeapon == nullptr) return;
-	
+
 	if (WeaponHasAmmo())
 	{
 		if (bFireButtonPressed && EquippedWeapon->GetAutomatic())
@@ -501,7 +502,7 @@ void AShooterCharacter::TraceForItems()
 					UnHighlightInventorySlot();
 				}
 			}
-			
+
 			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterping)
 			{
 				TraceHitItem = nullptr;
@@ -658,7 +659,9 @@ void AShooterCharacter::SendBullet()
 			{
 				UGameplayStatics::ApplyDamage(
 					BeamHitResult.GetActor(),
-					EquippedWeapon->GetDamage(),
+					BeamHitResult.BoneName.ToString() == HitEnemy->GetHeadBone()
+						? EquippedWeapon->GetHeadShotDamage()
+						: EquippedWeapon->GetDamage(),
 					GetController(),
 					this,
 					UDamageType::StaticClass()
@@ -671,7 +674,7 @@ void AShooterCharacter::SendBullet()
 			if (ImpactParticles)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamHitResult.Location);
-			}	
+			}
 		}
 
 		if (BeamParticles)
@@ -931,7 +934,7 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 	{
 		StopAiming();
 	}
-	
+
 	auto OldEquippedWeapon = EquippedWeapon;
 	auto NewWeapon = Cast<AWeapon>(Inventory[NewItemIndex]);
 
@@ -980,7 +983,7 @@ EPhysicalSurface AShooterCharacter::GetSurfaceType()
 	const FVector End{Start + FVector(0.f, 0.f, -400.f)};
 	FCollisionQueryParams QueryParams;
 	QueryParams.bReturnPhysicalMaterial = true;
-	
+
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
 
 	return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
