@@ -4,6 +4,7 @@
 #include "Enemies/Enemy.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -14,6 +15,37 @@ AEnemy::AEnemy() :
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AEnemy::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
+{
+	FVector ActorForwardVector = GetActorForwardVector();
+	FVector ActorRightVector = GetActorRightVector();
+
+	FVector ActorLocation = GetActorLocation();
+	FVector Diff = HitResult.Location - ActorLocation;
+	Diff.Normalize();
+	FVector HitLoc = Diff;
+
+	float ForwardVectorDotProduct = FVector::DotProduct(ActorForwardVector, HitLoc);
+	float RightVectorDotProduct = FVector::DotProduct(ActorRightVector, HitLoc);
+	
+	if (UKismetMathLibrary::InRange_FloatFloat(ForwardVectorDotProduct, 0.5f, 1.0f))
+	{
+		PlayHitMontage(FName("HitReactFront"));
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(ForwardVectorDotProduct, -1.0f, -0.5f))
+	{
+		PlayHitMontage(FName("HitReactBack"));
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(RightVectorDotProduct, 0.0f, 1.0f))
+	{
+		PlayHitMontage(FName("HitReactRight"));
+	}
+	else if (UKismetMathLibrary::InRange_FloatFloat(RightVectorDotProduct, -1.0f, -0.0f))
+	{
+		PlayHitMontage(FName("HitReactLeft"));
+	}
 }
 
 void AEnemy::BulletHit_Implementation(FHitResult HitResult)
@@ -36,27 +68,8 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 		);
 	}
 	ShowHealthBar();
-	FVector HitActorRightVector = FVector(0.f, HitResult.GetActor()->GetActorRightVector().Y, 0.f);
-	FVector HitVector = FVector(0.f, HitResult.Normal.Y, 0.f);
 
-		
-	// Angle between two vectors:
-	// Angle = ArcCosine( ( vectorA dot VectorB ) / ( VectorLengthA x VectorLengthB ) )
-
-	// Dot Product
-	float dotProduct = FVector::DotProduct(HitActorRightVector, HitVector);
-	//float lengthProduct = HitActorForwardVector.Size() * HitResult.Normal.Size();
-
-	// Angle
-	//float angle = FMath::Acos(dotProduct / lengthProduct);
-
-	float angle = FMath::Acos(dotProduct) * 180 / PI;
-	UE_LOG(LogTemp, Warning, TEXT("Text, %f"), angle);
-
-	if (angle > 0 && angle < 90)
-	{
-		PlayHitMontage(FName("HitReactRight"));
-	}
+	PlayHitMontageAccordingToHitDirection(HitResult);
 }
 
 // Called when the game starts or when spawned
@@ -92,15 +105,12 @@ void AEnemy::ShowHealthBar_Implementation()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector HitActorRightVector = FVector(0.f, GetActorRightVector().Y, 0.f);
-	FVector HitActorRightVector1 = FVector(0.f, GetActorRightVector().Y + 1000, 0.f);
 	
 	DrawDebugLine
 	(
 		GetWorld(),
-		HitActorRightVector,
-		HitActorRightVector1,
+		GetActorLocation(),
+		GetActorForwardVector() * 10000,
 		FColor::Red,
 		true,
 		10.f

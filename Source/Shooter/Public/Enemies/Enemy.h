@@ -18,6 +18,7 @@ class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
 public:
 	// Sets default values for this character's properties
 	AEnemy();
+	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
 	virtual void BulletHit_Implementation(FHitResult HitResult) override;
 protected:
 	// Called when the game starts or when spawned
