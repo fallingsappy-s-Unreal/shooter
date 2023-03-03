@@ -2,7 +2,6 @@
 
 
 #include "Enemies/Enemy.h"
-#include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
@@ -11,7 +10,10 @@
 AEnemy::AEnemy() :
 	Health(100.f),
 	MaxHealth(100.f),
-	HealthBarDisplayTime(4.f)
+	HealthBarDisplayTime(4.f),
+	bCanHitReact(true),
+	HitReactTimeMin(.5f),
+	HitReactTimeMax(3.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -87,12 +89,23 @@ void AEnemy::Die()
 
 void AEnemy::PlayHitMontage(FName Section, float PlayRate)
 {
+	if (!bCanHitReact) return;
+	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
 		AnimInstance->Montage_Play(HitMontage, PlayRate);
 		AnimInstance->Montage_JumpToSection(Section, HitMontage);
 	}
+
+	bCanHitReact = false;
+	const float HitReactTime{FMath::FRandRange(HitReactTimeMin, HitReactTimeMax)};
+	GetWorldTimerManager().SetTimer(HitReactTimer, this, &AEnemy::ResetHitReactTimer, HitReactTime);
+}
+
+void AEnemy::ResetHitReactTimer()
+{
+	bCanHitReact = true;
 }
 
 void AEnemy::ShowHealthBar_Implementation()

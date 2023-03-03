@@ -18,7 +18,7 @@ class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
 public:
 	// Sets default values for this character's properties
 	AEnemy();
-	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
+	
 	virtual void BulletHit_Implementation(FHitResult HitResult) override;
 protected:
 	// Called when the game starts or when spawned
@@ -33,6 +33,8 @@ protected:
 	void Die();
 
 	void PlayHitMontage(FName Section, float PlayRate = 1.0f);
+
+	void ResetHitReactTimer();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
@@ -56,6 +58,17 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitMontage;
+
+	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
+
+	FTimerHandle HitReactTimer;
+	bool bCanHitReact;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float HitReactTimeMin;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float HitReactTimeMax;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
