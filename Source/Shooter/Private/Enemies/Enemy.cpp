@@ -2,6 +2,8 @@
 
 
 #include "Enemies/Enemy.h"
+
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
@@ -13,7 +15,8 @@ AEnemy::AEnemy() :
 	HealthBarDisplayTime(4.f),
 	bCanHitReact(true),
 	HitReactTimeMin(.5f),
-	HitReactTimeMax(3.f)
+	HitReactTimeMax(3.f),
+	HitNumberDestroyTime(1.5f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -111,6 +114,22 @@ void AEnemy::ResetHitReactTimer()
 void AEnemy::StoreHitNumber(UUserWidget* HitNumber, FVector Location)
 {
 	HitNumbers.Add(HitNumber, Location);
+
+	FTimerHandle HitNumberTimer;
+	FTimerDelegate HitNumberDelegate;
+	HitNumberDelegate.BindUFunction(this, FName("DestroyHitNumber"), HitNumber);
+	GetWorld()->GetTimerManager().SetTimer(
+		HitNumberTimer,
+		HitNumberDelegate,
+		HitNumberDestroyTime,
+		false
+	);
+}
+
+void AEnemy::DestroyHitNumber(UUserWidget* HitNumber)
+{
+	HitNumbers.Remove(HitNumber);
+	HitNumber->RemoveFromParent();
 }
 
 void AEnemy::ShowHealthBar_Implementation()
