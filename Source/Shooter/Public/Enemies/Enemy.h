@@ -56,6 +56,9 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetStunned(bool Stunned);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;

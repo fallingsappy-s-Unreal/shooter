@@ -88,8 +88,8 @@ AShooterCharacter::AShooterCharacter() :
 	bAimingButtonPressed(false),
 
 	// Pickup sound timer properties
-	bShouldPlayEquipSound(true),
 	bShouldPlayPickupSound(true),
+	bShouldPlayEquipSound(true),
 
 	PickupSoundCooldown(0.2f),
 	EquipSoundCooldown(0.2f),
