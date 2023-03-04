@@ -41,6 +41,8 @@ protected:
 
 	UFUNCTION()
 	void DestroyHitNumber(UUserWidget* HitNumber);
+
+	void UpdateHitNumbers();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;

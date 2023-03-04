@@ -34,7 +34,7 @@ void AEnemy::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
 
 	float ForwardVectorDotProduct = FVector::DotProduct(ActorForwardVector, HitLoc);
 	float RightVectorDotProduct = FVector::DotProduct(ActorRightVector, HitLoc);
-	
+
 	if (UKismetMathLibrary::InRange_FloatFloat(ForwardVectorDotProduct, 0.5f, 1.0f))
 	{
 		PlayHitMontage(FName("HitReactFront"));
@@ -93,7 +93,7 @@ void AEnemy::Die()
 void AEnemy::PlayHitMontage(FName Section, float PlayRate)
 {
 	if (!bCanHitReact) return;
-	
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
@@ -132,6 +132,19 @@ void AEnemy::DestroyHitNumber(UUserWidget* HitNumber)
 	HitNumber->RemoveFromParent();
 }
 
+void AEnemy::UpdateHitNumbers()
+{
+	for (const auto& HitPair : HitNumbers)
+	{
+		UUserWidget* HitNumber{HitPair.Key};
+		const FVector Location{HitPair.Value};
+
+		FVector2D ScreenPosition;
+		UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), Location, ScreenPosition);
+		HitNumber->SetPositionInViewport(ScreenPosition);
+	}
+}
+
 void AEnemy::ShowHealthBar_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(HealthBarTimer);
@@ -142,16 +155,8 @@ void AEnemy::ShowHealthBar_Implementation()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	DrawDebugLine
-	(
-		GetWorld(),
-		GetActorLocation(),
-		GetActorForwardVector() * 10000,
-		FColor::Red,
-		true,
-		10.f
-	);
+
+	UpdateHitNumbers();
 }
 
 // Called to bind functionality to input
