@@ -92,6 +92,10 @@ void AEnemy::BeginPlay()
 	{
 		const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(FName("PatrolPoint"), WorldPatrolPoint);
+
+		const FVector WorldPatrolPoint2 = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint2);
+		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(FName("PatrolPoint2"), WorldPatrolPoint2);
+		
 		EnemyController->RunBehaviorTree(BehaviorTree);
 	}
 }
