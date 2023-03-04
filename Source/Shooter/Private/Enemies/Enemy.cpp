@@ -108,6 +108,11 @@ void AEnemy::ResetHitReactTimer()
 	bCanHitReact = true;
 }
 
+void AEnemy::StoreHitNumber(UUserWidget* HitNumber, FVector Location)
+{
+	HitNumbers.Add(HitNumber, Location);
+}
+
 void AEnemy::ShowHealthBar_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(HealthBarTimer);
