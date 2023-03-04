@@ -108,10 +108,15 @@ private:
 
 	UPROPERTY()
 	AEnemyController* EnemyController;
-
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UShapeComponent* AgroSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bStunned;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float StunChance;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

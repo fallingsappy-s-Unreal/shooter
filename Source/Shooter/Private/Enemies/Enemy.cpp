@@ -20,7 +20,9 @@ AEnemy::AEnemy() :
 	bCanHitReact(true),
 	HitReactTimeMin(.5f),
 	HitReactTimeMax(3.f),
-	HitNumberDestroyTime(1.5f)
+	HitNumberDestroyTime(1.5f),
+	bStunned(false),
+	StunChance(0.5f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -81,7 +83,12 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 	}
 	ShowHealthBar();
 
-	PlayHitMontageAccordingToHitDirection(HitResult);
+	const float Stunned = FMath::FRandRange(0.f, 1.f);
+	if (Stunned <= StunChance)
+	{
+		PlayHitMontageAccordingToHitDirection(HitResult);
+		bStunned = true;
+	}
 }
 
 // Called when the game starts or when spawned
