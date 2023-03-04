@@ -11,6 +11,7 @@ class UParticleSystem;
 class USoundCue;
 class UBehaviorTree;
 class AEnemyController;
+class UShapeComponent;
 
 UCLASS()
 class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
@@ -45,6 +46,16 @@ protected:
 	void DestroyHitNumber(UUserWidget* HitNumber);
 
 	void UpdateHitNumbers();
+
+	UFUNCTION()
+	void AgroSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
@@ -97,6 +108,10 @@ private:
 
 	UPROPERTY()
 	AEnemyController* EnemyController;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UShapeComponent* AgroSphere;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

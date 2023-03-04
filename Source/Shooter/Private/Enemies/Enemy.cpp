@@ -5,6 +5,8 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Character/ShooterCharacter.h"
+#include "Components/SphereComponent.h"
 #include "Enemies/EnemyController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -22,6 +24,9 @@ AEnemy::AEnemy() :
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	AgroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AgroSphere"));
+	AgroSphere->SetupAttachment(GetRootComponent());
 }
 
 void AEnemy::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
@@ -83,6 +88,8 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AgroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AgroSphereOverlap);
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
@@ -157,6 +164,17 @@ void AEnemy::UpdateHitNumbers()
 		FVector2D ScreenPosition;
 		UGameplayStatics::ProjectWorldToScreen(GetWorld()->GetFirstPlayerController(), Location, ScreenPosition);
 		HitNumber->SetPositionInViewport(ScreenPosition);
+	}
+}
+
+void AEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == nullptr) return;
+
+	if (const auto Character = Cast<AShooterCharacter>(OtherActor))
+	{
+		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), Character);
 	}
 }
 
