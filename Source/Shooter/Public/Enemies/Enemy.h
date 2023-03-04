@@ -34,8 +34,12 @@ protected:
 	void HideHealthBar();
 
 	void Die();
+	void PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay);
 
 	void PlayHitMontage(FName Section, float PlayRate = 1.0f);
+
+	UFUNCTION(BlueprintCallable)
+	void PlayAttackMontage(FName Section, float PlayRate = 1.0f);
 
 	void ResetHitReactTimer();
 
@@ -99,6 +103,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* AttackMontage;
+
 	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
 
 	FTimerHandle HitReactTimer;
@@ -142,6 +149,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USphereComponent* CombatRangeSphere;
+
+	FName AttackLFast;
+	FName AttackRFast;
+	FName AttackL;
+	FName AttackR;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

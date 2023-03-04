@@ -22,7 +22,11 @@ AEnemy::AEnemy() :
 	HitReactTimeMax(3.f),
 	HitNumberDestroyTime(1.5f),
 	bStunned(false),
-	StunChance(0.5f)
+	StunChance(0.5f),
+	AttackLFast(TEXT("AttackLFast")),
+	AttackRFast(TEXT("AttackRFast")),
+	AttackL(TEXT("AttackL")),
+	AttackR(TEXT("AttackR"))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -124,20 +128,30 @@ void AEnemy::Die()
 	HideHealthBar();
 }
 
+void AEnemy::PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && MontageToPlay)
+	{
+		AnimInstance->Montage_Play(MontageToPlay, PlayRate);
+		AnimInstance->Montage_JumpToSection(Section, MontageToPlay);
+	}
+}
+
 void AEnemy::PlayHitMontage(FName Section, float PlayRate)
 {
 	if (!bCanHitReact) return;
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
-	{
-		AnimInstance->Montage_Play(HitMontage, PlayRate);
-		AnimInstance->Montage_JumpToSection(Section, HitMontage);
-	}
+	PlayMontageSection(Section, PlayRate, HitMontage);
 
 	bCanHitReact = false;
 	const float HitReactTime{FMath::FRandRange(HitReactTimeMin, HitReactTimeMax)};
 	GetWorldTimerManager().SetTimer(HitReactTimer, this, &AEnemy::ResetHitReactTimer, HitReactTime);
+}
+
+void AEnemy::PlayAttackMontage(FName Section, float PlayRate)
+{
+	PlayMontageSection(Section, PlayRate, AttackMontage);
 }
 
 void AEnemy::ResetHitReactTimer()
