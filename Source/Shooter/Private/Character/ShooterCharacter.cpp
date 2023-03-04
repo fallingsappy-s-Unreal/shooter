@@ -18,7 +18,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
-#include "Shooter/Shooter.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -657,9 +656,10 @@ void AShooterCharacter::SendBullet()
 			AEnemy* HitEnemy = Cast<AEnemy>(BeamHitResult.GetActor());
 			if (HitEnemy)
 			{
-				float DamageToApply = BeamHitResult.BoneName.ToString() == HitEnemy->GetHeadBone()
-						? EquippedWeapon->GetHeadShotDamage()
-						: EquippedWeapon->GetDamage();
+				bool bHeadShot = BeamHitResult.BoneName.ToString() == HitEnemy->GetHeadBone();
+				float DamageToApply = bHeadShot
+					                      ? EquippedWeapon->GetHeadShotDamage()
+					                      : EquippedWeapon->GetDamage();
 				UGameplayStatics::ApplyDamage(
 					BeamHitResult.GetActor(),
 					DamageToApply,
@@ -668,7 +668,7 @@ void AShooterCharacter::SendBullet()
 					UDamageType::StaticClass()
 				);
 
-				HitEnemy->ShowHitNumber(DamageToApply, BeamHitResult.Location);
+				HitEnemy->ShowHitNumber(DamageToApply, BeamHitResult.Location, bHeadShot);
 			}
 		}
 		else
