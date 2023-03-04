@@ -10,6 +10,7 @@
 class UParticleSystem;
 class USoundCue;
 class UBehaviorTree;
+class AEnemyController;
 
 UCLASS()
 class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
@@ -90,6 +91,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Behavior Tree", meta = (AllowPrivateAccess = "true", MakeEditWidget = "true"))
 	FVector PatrolPoint;
+
+	UPROPERTY()
+	AEnemyController* EnemyController;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
