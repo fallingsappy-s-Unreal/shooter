@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Character/ShooterCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Enemies/EnemyController.h"
 #include "Kismet/GameplayStatics.h"
@@ -108,6 +109,8 @@ void AEnemy::BeginPlay()
 	CombatRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatRangeEndOverlap);
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	EnemyController = Cast<AEnemyController>(GetController());
 
@@ -251,6 +254,7 @@ FName AEnemy::GetAttackSectionName()
 	case 2: return AttackRFast;
 	case 3: return AttackL;
 	case 4: return AttackR;
+	default: return FName("");
 	}
 }
 
