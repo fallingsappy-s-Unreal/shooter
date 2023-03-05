@@ -109,6 +109,18 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 	);
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateLeftWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateLeftWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateRightWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateRightWeapon();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
