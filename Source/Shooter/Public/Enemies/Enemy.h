@@ -84,6 +84,8 @@ protected:
 	UFUNCTION(BlueprintPure)
 	FName GetAttackSectionName();
 
+	void DoDamage(AActor* Victim);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* LeftWeaponCollision;
 
@@ -196,6 +198,9 @@ private:
 	FName AttackRFast;
 	FName AttackL;
 	FName AttackR;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float BaseDamage;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
