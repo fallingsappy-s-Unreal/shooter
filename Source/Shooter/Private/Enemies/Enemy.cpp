@@ -283,6 +283,11 @@ FName AEnemy::GetAttackSectionName()
 
 void AEnemy::DoDamage(AActor* Victim)
 {
+	if (MeleeImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, MeleeImpactSound, GetActorLocation());
+	}
+	
 	if (Victim == nullptr) return;
 
 	auto Character = Cast<AShooterCharacter>(Victim);

@@ -201,6 +201,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float BaseDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USoundCue* MeleeImpactSound;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
