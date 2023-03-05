@@ -12,6 +12,7 @@ class USoundCue;
 class UBehaviorTree;
 class AEnemyController;
 class USphereComponent;
+class UBoxComponent;
 
 UCLASS()
 class SHOOTER_API AEnemy : public ACharacter, public IBulletHitInterface
@@ -82,6 +83,32 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	FName GetAttackSectionName();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* LeftWeaponCollision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* RightWeaponCollision;
+
+	UFUNCTION()
+	void OnLeftWeaponOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
+
+	UFUNCTION()
+	void OnRightWeaponOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
