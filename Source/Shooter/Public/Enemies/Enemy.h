@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BulletHitInterface.h"
+#include "Character/ShooterCharacter.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
@@ -83,8 +84,9 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	FName GetAttackSectionName();
+	void SpawnBlood(FName SocketName, AShooterCharacter* Character);
 
-	void DoDamage(AActor* Victim);
+	void DoDamage(AActor* Victim, FName SocketName);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* LeftWeaponCollision;
@@ -204,6 +206,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USoundCue* MeleeImpactSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FName LeftWeaponSocket;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FName RightWeaponSocket;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

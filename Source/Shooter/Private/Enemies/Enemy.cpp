@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Enemies/EnemyController.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
@@ -29,7 +30,9 @@ AEnemy::AEnemy() :
 	AttackRFast(TEXT("AttackRFast")),
 	AttackL(TEXT("AttackL")),
 	AttackR(TEXT("AttackR")),
-	BaseDamage(20.f)
+	BaseDamage(20.f),
+	LeftWeaponSocket(TEXT("FX_Trail_L_01")),
+	RightWeaponSocket(TEXT("FX_Trail_R_01"))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -115,20 +118,20 @@ void AEnemy::BeginPlay()
 	AgroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AgroSphereOverlap);
 	CombatRangeSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatRangeOverlap);
 	CombatRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatRangeEndOverlap);
-	
+
 	LeftWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnLeftWeaponOverlap);
 	LeftWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	LeftWeaponCollision->SetCollisionObjectType(ECC_WorldDynamic);
 	LeftWeaponCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	LeftWeaponCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	
+
 	RightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnRightWeaponOverlap);
 	RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RightWeaponCollision->SetCollisionObjectType(ECC_WorldDynamic);
 	RightWeaponCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	RightWeaponCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	
-	
+
+
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -224,7 +227,7 @@ void AEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OtherActor == nullptr) return;
 
 	const auto Character = Cast<AShooterCharacter>(OtherActor);
-	
+
 	if (Character && EnemyController)
 	{
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), Character);
@@ -281,32 +284,49 @@ FName AEnemy::GetAttackSectionName()
 	}
 }
 
-void AEnemy::DoDamage(AActor* Victim)
+void AEnemy::SpawnBlood(FName SocketName, AShooterCharacter* const Character)
+{
+	const USkeletalMeshSocket* TipSocket{GetMesh()->GetSocketByName(SocketName)};
+	if (TipSocket)
+	{
+		const FTransform SocketTransform{TipSocket->GetSocketTransform(GetMesh())};
+		if (Character->GetBloodParticles())
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Character->GetBloodParticles(), SocketTransform);
+		}
+	}
+}
+
+void AEnemy::DoDamage(AActor* Victim, FName SocketName)
 {
 	if (MeleeImpactSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, MeleeImpactSound, GetActorLocation());
 	}
-	
+
 	if (Victim == nullptr) return;
 
-	auto Character = Cast<AShooterCharacter>(Victim);
+	const auto Character = Cast<AShooterCharacter>(Victim);
 	if (Character)
 	{
+		SpawnBlood(SocketName, Character);
+
 		UGameplayStatics::ApplyDamage(Character, BaseDamage, EnemyController, this, UDamageType::StaticClass());
 	}
 }
 
 void AEnemy::OnLeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                 const FHitResult& SweepResult)
 {
-	DoDamage(OtherActor);
+	DoDamage(OtherActor, LeftWeaponSocket);
 }
 
 void AEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                  const FHitResult& SweepResult)
 {
-	DoDamage(OtherActor);
+	DoDamage(OtherActor, RightWeaponSocket);
 }
 
 void AEnemy::ActivateLeftWeapon()
