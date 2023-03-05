@@ -308,7 +308,7 @@ void AShooterCharacter::AimingButtonPressed()
 {
 	bAimingButtonPressed = true;
 
-	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Reloading)
+	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Stunned)
 	{
 		Aim();
 	}
@@ -438,6 +438,7 @@ void AShooterCharacter::StartFireTimer()
 
 void AShooterCharacter::AutoFireReset()
 {
+	if (CombatState == ECombatState::ECS_Stunned) return;
 	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (EquippedWeapon == nullptr) return;
@@ -752,6 +753,7 @@ void AShooterCharacter::ReloadWeapon()
 
 void AShooterCharacter::FinishReloading()
 {
+	if (CombatState == ECombatState::ECS_Stunned) return;
 	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (bAimingButtonPressed)
@@ -778,6 +780,7 @@ void AShooterCharacter::FinishReloading()
 
 void AShooterCharacter::FinishEquipping()
 {
+	if (CombatState == ECombatState::ECS_Stunned) return;
 	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (bAimingButtonPressed)
@@ -1008,6 +1011,16 @@ EPhysicalSurface AShooterCharacter::GetSurfaceType()
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams);
 
 	return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+}
+
+void AShooterCharacter::EndStun()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+
+	if (bAimingButtonPressed)
+	{
+		Aim();
+	}
 }
 
 void AShooterCharacter::UnHighlightInventorySlot()
