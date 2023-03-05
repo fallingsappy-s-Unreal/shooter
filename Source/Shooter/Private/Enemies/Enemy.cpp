@@ -223,7 +223,9 @@ void AEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (OtherActor == nullptr) return;
 
-	if (const auto Character = Cast<AShooterCharacter>(OtherActor))
+	const auto Character = Cast<AShooterCharacter>(OtherActor);
+	
+	if (Character && EnemyController)
 	{
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), Character);
 	}

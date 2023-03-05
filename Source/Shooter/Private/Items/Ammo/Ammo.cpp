@@ -85,8 +85,11 @@ void AAmmo::AmmoSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	if (OtherActor)
 	{
 		const auto ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
-		StartItemCurve(ShooterCharacter);
-		AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (ShooterCharacter)
+		{
+			StartItemCurve(ShooterCharacter);
+			AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 }
 
