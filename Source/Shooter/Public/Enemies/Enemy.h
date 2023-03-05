@@ -79,6 +79,9 @@ protected:
 	                           AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	bool SetIsInAttackRange(AActor* OtherActor, bool IsInAttackRange);
+
+	UFUNCTION(BlueprintPure)
+	FName GetAttackSectionName();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;

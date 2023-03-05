@@ -118,7 +118,7 @@ void AEnemy::BeginPlay()
 
 		const FVector WorldPatrolPoint2 = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint2);
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(FName("PatrolPoint2"), WorldPatrolPoint2);
-		
+
 		EnemyController->RunBehaviorTree(BehaviorTree);
 	}
 }
@@ -194,7 +194,8 @@ void AEnemy::UpdateHitNumbers()
 }
 
 void AEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                               const FHitResult& SweepResult)
 {
 	if (OtherActor == nullptr) return;
 
@@ -214,13 +215,14 @@ void AEnemy::SetStunned(bool Stunned)
 }
 
 void AEnemy::CombatRangeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                const FHitResult& SweepResult)
 {
 	SetIsInAttackRange(OtherActor, true);
 }
 
 void AEnemy::CombatRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-								   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	SetIsInAttackRange(OtherActor, false);
 }
@@ -231,13 +233,25 @@ bool AEnemy::SetIsInAttackRange(AActor* OtherActor, bool IsInAttackRange)
 
 	const auto ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
 	if (ShooterCharacter == nullptr) return true;
-	
+
 	bInAttackRange = IsInAttackRange;
 	if (EnemyController)
 	{
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(FName("InAttackRange"), IsInAttackRange);
 	}
 	return false;
+}
+
+FName AEnemy::GetAttackSectionName()
+{
+	const int32 Section{FMath::RandRange(1, 4)};
+	switch (Section)
+	{
+	case 1: return AttackLFast;
+	case 2: return AttackRFast;
+	case 3: return AttackL;
+	case 4: return AttackR;
+	}
 }
 
 void AEnemy::ShowHealthBar_Implementation()
