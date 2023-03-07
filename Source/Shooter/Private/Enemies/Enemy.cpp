@@ -399,6 +399,11 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                          AActor* DamageCauser)
 {
+	if (EnemyController)
+	{
+		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), DamageCauser);
+	}
+	
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;
