@@ -86,7 +86,7 @@ protected:
 	FName GetAttackSectionName();
 	void SpawnBlood(FName SocketName, AShooterCharacter* Character);
 
-	void DoDamage(AActor* Victim, FName SocketName);
+	void DoDamage(AActor* Victim, FName SocketName, const FHitResult& HitResult);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* LeftWeaponCollision;
@@ -126,7 +126,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateRightWeapon();
 
-	void AttemptToStunCharacter(AShooterCharacter* Victim);
+	void AttemptToStunCharacter(AShooterCharacter* Victim, const FHitResult& HitResult);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;

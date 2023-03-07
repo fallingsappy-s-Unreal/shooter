@@ -457,6 +457,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float StunChance;
+
+	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
+	void PlayHitMontage(FName Section, float PlayRate = 1.0f);
+	void PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay);
 public:
 	// Returns CameraBoom subobject
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -492,6 +496,6 @@ public:
 	FORCEINLINE AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE UParticleSystem* GetBloodParticles() const { return BloodParticles; }
 	
-	void Stun();
+	void Stun(const FHitResult& HitResult);
 	FORCEINLINE float GetStunChance() const { return StunChance; }
 };

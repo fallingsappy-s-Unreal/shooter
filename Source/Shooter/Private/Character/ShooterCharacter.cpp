@@ -4,6 +4,8 @@
 
 #include "Shooter/Public/Items/Weapons/AmmoType.h"
 #include "Camera/CameraComponent.h"
+#include "Common/CombatHelper.h"
+#include "Common/HitDirection.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enemies/BulletHitInterface.h"
@@ -152,7 +154,7 @@ AShooterCharacter::AShooterCharacter() :
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+                                    AActor* DamageCauser)
 {
 	if (Health - DamageAmount <= 0.f)
 	{
@@ -310,7 +312,8 @@ void AShooterCharacter::AimingButtonPressed()
 {
 	bAimingButtonPressed = true;
 
-	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Stunned)
+	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Reloading && CombatState !=
+		ECombatState::ECS_Stunned)
 	{
 		Aim();
 	}
@@ -1031,16 +1034,11 @@ void AShooterCharacter::UnHighlightInventorySlot()
 	HighlightedSlotIndex = -1;
 }
 
-void AShooterCharacter::Stun()
+void AShooterCharacter::Stun(const FHitResult& HitResult)
 {
 	CombatState = ECombatState::ECS_Stunned;
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		AnimInstance->Montage_JumpToSection(FName("HitReactFront"), HitReactMontage);
-	}
+	PlayHitMontageAccordingToHitDirection(HitResult);
 }
 
 int32 AShooterCharacter::GetInterpLocationIndex()
@@ -1156,6 +1154,40 @@ void AShooterCharacter::ResetPickupSoundTimer()
 void AShooterCharacter::ResetEquipSoundTimer()
 {
 	bShouldPlayEquipSound = true;
+}
+
+void AShooterCharacter::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
+{
+	switch (CombatHelper::GetHitDirection(this, HitResult))
+	{
+	case EHitDirection::EHD_Front:
+		PlayHitMontage(FName("HitReactFront"));
+		break;
+	case EHitDirection::EHD_Back:
+		PlayHitMontage(FName("HitReactBack"));
+		break;
+	case EHitDirection::EHD_Left:
+		PlayHitMontage(FName("HitReactLeft"));
+		break;
+	case EHitDirection::EHD_Right:
+		PlayHitMontage(FName("HitReactRight"));
+		break;
+	}
+}
+
+void AShooterCharacter::PlayHitMontage(FName Section, float PlayRate)
+{
+	PlayMontageSection(Section, PlayRate, HitReactMontage);
+}
+
+void AShooterCharacter::PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && MontageToPlay)
+	{
+		AnimInstance->Montage_Play(MontageToPlay, PlayRate);
+		AnimInstance->Montage_JumpToSection(Section, MontageToPlay);
+	}
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const

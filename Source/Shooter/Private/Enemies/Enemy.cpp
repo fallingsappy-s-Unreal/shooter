@@ -6,6 +6,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Character/ShooterCharacter.h"
+#include "Common/CombatHelper.h"
+#include "Common/HitDirection.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -52,32 +54,20 @@ AEnemy::AEnemy() :
 
 void AEnemy::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
 {
-	FVector ActorForwardVector = GetActorForwardVector();
-	FVector ActorRightVector = GetActorRightVector();
-
-	FVector ActorLocation = GetActorLocation();
-	FVector Diff = HitResult.Location - ActorLocation;
-	Diff.Normalize();
-	FVector HitLoc = Diff;
-
-	float ForwardVectorDotProduct = FVector::DotProduct(ActorForwardVector, HitLoc);
-	float RightVectorDotProduct = FVector::DotProduct(ActorRightVector, HitLoc);
-
-	if (UKismetMathLibrary::InRange_FloatFloat(ForwardVectorDotProduct, 0.5f, 1.0f))
+	switch (CombatHelper::GetHitDirection(this, HitResult))
 	{
+	case EHitDirection::EHD_Front:
 		PlayHitMontage(FName("HitReactFront"));
-	}
-	else if (UKismetMathLibrary::InRange_FloatFloat(ForwardVectorDotProduct, -1.0f, -0.5f))
-	{
+		break;
+	case EHitDirection::EHD_Back:
 		PlayHitMontage(FName("HitReactBack"));
-	}
-	else if (UKismetMathLibrary::InRange_FloatFloat(RightVectorDotProduct, 0.0f, 1.0f))
-	{
-		PlayHitMontage(FName("HitReactRight"));
-	}
-	else if (UKismetMathLibrary::InRange_FloatFloat(RightVectorDotProduct, -1.0f, -0.0f))
-	{
+		break;
+	case EHitDirection::EHD_Left:
 		PlayHitMontage(FName("HitReactLeft"));
+		break;
+	case EHitDirection::EHD_Right:
+		PlayHitMontage(FName("HitReactRight"));
+		break;
 	}
 }
 
@@ -297,7 +287,7 @@ void AEnemy::SpawnBlood(FName SocketName, AShooterCharacter* const Character)
 	}
 }
 
-void AEnemy::DoDamage(AActor* Victim, FName SocketName)
+void AEnemy::DoDamage(AActor* Victim, FName SocketName, const FHitResult& HitResult)
 {
 	if (MeleeImpactSound)
 	{
@@ -310,7 +300,7 @@ void AEnemy::DoDamage(AActor* Victim, FName SocketName)
 	if (Character)
 	{
 		SpawnBlood(SocketName, Character);
-
+		AttemptToStunCharacter(Character, HitResult);
 		UGameplayStatics::ApplyDamage(Character, BaseDamage, EnemyController, this, UDamageType::StaticClass());
 	}
 }
@@ -319,14 +309,14 @@ void AEnemy::OnLeftWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActo
                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                  const FHitResult& SweepResult)
 {
-	DoDamage(OtherActor, LeftWeaponSocket);
+	DoDamage(OtherActor, LeftWeaponSocket, SweepResult);
 }
 
 void AEnemy::OnRightWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                   const FHitResult& SweepResult)
 {
-	DoDamage(OtherActor, RightWeaponSocket);
+	DoDamage(OtherActor, RightWeaponSocket, SweepResult);
 }
 
 void AEnemy::ActivateLeftWeapon()
@@ -349,14 +339,14 @@ void AEnemy::DeactivateRightWeapon()
 	RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AEnemy::AttemptToStunCharacter(AShooterCharacter* Victim)
+void AEnemy::AttemptToStunCharacter(AShooterCharacter* Victim, const FHitResult& HitResult)
 {
 	if (Victim)
 	{
 		const float Stun{FMath::RandRange(0.f, 1.f)};
 		if (Stun <= Victim->GetStunChance())
 		{
-			Victim->Stun();
+			Victim->Stun(HitResult);
 		}
 	}
 }
