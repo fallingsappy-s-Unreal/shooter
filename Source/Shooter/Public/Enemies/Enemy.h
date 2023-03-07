@@ -127,6 +127,8 @@ protected:
 	void DeactivateRightWeapon();
 
 	void AttemptToStunCharacter(AShooterCharacter* Victim, const FHitResult& HitResult);
+
+	void ResetCanAttack();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
@@ -214,6 +216,14 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	FName RightWeaponSocket;
+
+	UPROPERTY(VisibleAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool bCanAttack;
+
+	FTimerHandle AttackWaitTimer;
+
+	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float AttackWaitTime;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
