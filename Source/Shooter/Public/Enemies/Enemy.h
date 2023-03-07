@@ -125,6 +125,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void DeactivateRightWeapon();
+
+	void AttemptToStunCharacter(AShooterCharacter* Victim);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;

@@ -349,6 +349,18 @@ void AEnemy::DeactivateRightWeapon()
 	RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void AEnemy::AttemptToStunCharacter(AShooterCharacter* Victim)
+{
+	if (Victim)
+	{
+		const float Stun{FMath::RandRange(0.f, 1.f)};
+		if (Stun <= Victim->GetStunChance())
+		{
+			Victim->Stun();
+		}
+	}
+}
+
 void AEnemy::ShowHealthBar_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(HealthBarTimer);
