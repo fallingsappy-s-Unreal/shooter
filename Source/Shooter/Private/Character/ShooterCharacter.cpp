@@ -684,9 +684,11 @@ void AShooterCharacter::SendBullet()
 				float DamageToApply = bHeadShot
 					                      ? EquippedWeapon->GetHeadShotDamage()
 					                      : EquippedWeapon->GetDamage();
-				UGameplayStatics::ApplyDamage(
+				UGameplayStatics::ApplyPointDamage(
 					BeamHitResult.GetActor(),
 					DamageToApply,
+					BeamHitResult.TraceStart,
+					BeamHitResult,
 					GetController(),
 					this,
 					UDamageType::StaticClass()

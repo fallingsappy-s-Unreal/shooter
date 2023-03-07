@@ -144,9 +144,16 @@ void AEnemy::BeginPlay()
 	}
 }
 
+void AEnemy::Die(const FHitResult& HitResult)
+{
+	HideHealthBar();
+	PlayDeathMontage(HitResult);
+}
+
 void AEnemy::Die()
 {
 	HideHealthBar();
+	PlayMontageSection(FName("DeathFromFront"), 1.0f, DeathMontage);
 }
 
 void AEnemy::PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay)
@@ -382,6 +389,21 @@ void AEnemy::ShowHealthBar_Implementation()
 	GetWorldTimerManager().SetTimer(HealthBarTimer, this, &AEnemy::HideHealthBar, HealthBarDisplayTime);
 }
 
+void AEnemy::PlayDeathMontage(const FHitResult& HitResult)
+{
+	switch (CombatHelper::GetHitDirection(this, HitResult))
+	{
+	case EHitDirection::EHD_Left:
+	case EHitDirection::EHD_Front:
+		PlayMontageSection(FName("DeathFromFront"), 1.0f, DeathMontage);
+		break;
+	case EHitDirection::EHD_Right:
+	case EHitDirection::EHD_Back:
+		PlayMontageSection(FName("DeathFromBack"), 1.0f, DeathMontage);
+		break;
+	}
+}
+
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
@@ -403,15 +425,33 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	{
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), DamageCauser);
 	}
-	
+
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;
-		Die();
+		Die(PointDamageEvent->HitInfo);
 	}
 	else
 	{
 		Health -= DamageAmount;
+	}
+	
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		// point damage event, pass off to helper function
+		FPointDamageEvent* const PointDamageEvent = (FPointDamageEvent*) &DamageEvent;
+	
+		if (Health - DamageAmount <= 0.f)
+		{
+			Die(PointDamageEvent->HitInfo);
+		}
+	}
+	else
+	{
+		if (Health - DamageAmount <= 0.f)
+		{
+			Die();
+		}
 	}
 
 	return DamageAmount;

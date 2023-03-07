@@ -35,6 +35,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void HideHealthBar();
 
+	void Die(const FHitResult& HitResult);
 	void Die();
 	void PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay);
 
@@ -224,6 +225,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float AttackWaitTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DeathMontage;
+
+	void PlayDeathMontage(const FHitResult& HitResult);
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
