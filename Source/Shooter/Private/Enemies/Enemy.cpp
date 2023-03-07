@@ -148,12 +148,23 @@ void AEnemy::Die(const FHitResult& HitResult)
 {
 	HideHealthBar();
 	PlayDeathMontage(HitResult);
+	
+	if (EnemyController)
+	{
+		EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+		EnemyController->StopMovement();
+	}
 }
 
 void AEnemy::Die()
 {
 	HideHealthBar();
 	PlayMontageSection(FName("DeathFromFront"), 1.0f, DeathMontage);
+	if (EnemyController)
+	{
+		EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(FName("IsDead"), true);
+		EnemyController->StopMovement();
+	}
 }
 
 void AEnemy::PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay)
