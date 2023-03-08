@@ -37,7 +37,8 @@ AEnemy::AEnemy() :
 	RightWeaponSocket(TEXT("FX_Trail_R_01")),
 	bCanAttack(true),
 	AttackWaitTime(1.f),
-	bDying(false)
+	bDying(false),
+	DeathTime(4.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -93,6 +94,9 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 			true
 		);
 	}
+
+	if (bDying) return;
+	
 	ShowHealthBar();
 
 	const float Stunned = FMath::FRandRange(0.f, 1.f);
@@ -403,7 +407,10 @@ void AEnemy::ResetCanAttack()
 
 void AEnemy::FinishDeath()
 {
-	Destroy();
+	GetMesh()->bPauseAnims = true;
+	GetWorldTimerManager().SetTimer(DeathTimer, this, &AEnemy::DestroyEnemy, DeathTime);
+	
+	//Destroy();
 }
 
 void AEnemy::ShowHealthBar_Implementation()
@@ -425,6 +432,11 @@ void AEnemy::PlayDeathMontage(const FHitResult& HitResult)
 		PlayMontageSection(FName("DeathFromBack"), 1.0f, DeathMontage);
 		break;
 	}
+}
+
+void AEnemy::DestroyEnemy()
+{
+	Destroy();
 }
 
 // Called every frame

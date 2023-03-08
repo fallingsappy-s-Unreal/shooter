@@ -235,6 +235,14 @@ private:
 	void PlayDeathMontage(const FHitResult& HitResult);
 	
 	bool bDying;
+
+	FTimerHandle DeathTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float DeathTime;
+
+	UFUNCTION()
+	void DestroyEnemy();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
