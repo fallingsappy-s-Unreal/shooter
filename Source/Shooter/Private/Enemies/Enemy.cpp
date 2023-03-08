@@ -75,9 +75,9 @@ void AEnemy::PlayHitMontageAccordingToHitDirection(FHitResult HitResult)
 	}
 }
 
-void AEnemy::BulletHit_Implementation(FHitResult HitResult)
+void AEnemy::BulletHit_Implementation(FHitResult HitResult, AActor* Shooter, AController* InstigatorController)
 {
-	IBulletHitInterface::BulletHit_Implementation(HitResult);
+	IBulletHitInterface::BulletHit_Implementation(HitResult, Shooter, InstigatorController);
 
 	if (ImpactSound)
 	{
@@ -95,16 +95,7 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 		);
 	}
 
-	if (bDying) return;
-	
-	ShowHealthBar();
-
-	const float Stunned = FMath::FRandRange(0.f, 1.f);
-	if (Stunned <= StunChance)
-	{
-		PlayHitMontageAccordingToHitDirection(HitResult);
-		SetStunned(true);
-	}
+	PlayHitMontageAccordingToHitDirection(HitResult);
 }
 
 // Called when the game starts or when spawned
@@ -262,7 +253,7 @@ void AEnemy::AgroSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 
 	const auto Character = Cast<AShooterCharacter>(OtherActor);
 
-	if (Character && EnemyController)
+	if (Character && EnemyController && EnemyController->GetEnemyBlackboardComponent())
 	{
 		EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(FName("Target"), Character);
 	}
@@ -485,6 +476,16 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		{
 			Die();
 		}
+	}
+
+	if (bDying) return DamageAmount;
+	
+	ShowHealthBar();
+
+	const float Stunned = FMath::FRandRange(0.f, 1.f);
+	if (Stunned <= StunChance)
+	{
+		SetStunned(true);
 	}
 
 	return DamageAmount;

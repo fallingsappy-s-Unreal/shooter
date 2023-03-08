@@ -24,7 +24,7 @@ public:
 	// Sets default values for this character's properties
 	AEnemy();
 
-	virtual void BulletHit_Implementation(FHitResult HitResult) override;
+	virtual void BulletHit_Implementation(FHitResult HitResult, AActor* Shooter, AController* InstigatorController) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
