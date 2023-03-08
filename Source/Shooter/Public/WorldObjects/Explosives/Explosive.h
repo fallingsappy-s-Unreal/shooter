@@ -9,6 +9,8 @@
 
 class UParticleSystem;
 class USoundCue;
+class USphereComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class SHOOTER_API AExplosive : public AActor, public IBulletHitInterface
@@ -29,6 +31,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USoundCue* ExplodeSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USphereComponent* OverlapSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ExplosiveMesh;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
