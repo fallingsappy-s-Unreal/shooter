@@ -2,6 +2,7 @@
 
 #include "Shooter/Public/Character/ShooterCharacter.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Shooter/Public/Items/Weapons/AmmoType.h"
 #include "Camera/CameraComponent.h"
 #include "Common/CombatHelper.h"
@@ -10,6 +11,7 @@
 #include "Components/WidgetComponent.h"
 #include "Enemies/BulletHitInterface.h"
 #include "Enemies/Enemy.h"
+#include "Enemies/EnemyController.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -159,7 +161,14 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;
+
 		Die();
+
+		auto EnemyController = Cast<AEnemyController>(EventInstigator);
+		if (EnemyController)
+		{
+			EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(FName("CharacterIsDead"), true);
+		}
 	}
 	else
 	{
