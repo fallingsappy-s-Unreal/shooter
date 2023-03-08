@@ -159,6 +159,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;
+		Die();
 	}
 	else
 	{
@@ -1030,6 +1031,21 @@ void AShooterCharacter::EndStun()
 	}
 }
 
+void AShooterCharacter::Die()
+{
+	PlayMontageSection(FName("Default"), 1.0f, DeathMontage);
+}
+
+void AShooterCharacter::FinishDeath()
+{
+	GetMesh()->bPauseAnims = true;
+	auto PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		DisableInput(PlayerController);
+	}
+}
+
 void AShooterCharacter::UnHighlightInventorySlot()
 {
 	HighlightIconDelegate.Broadcast(HighlightedSlotIndex, false);
@@ -1038,6 +1054,8 @@ void AShooterCharacter::UnHighlightInventorySlot()
 
 void AShooterCharacter::Stun(const FHitResult& HitResult)
 {
+	if (Health <= 0) return;
+	
 	CombatState = ECombatState::ECS_Stunned;
 
 	PlayHitMontageAccordingToHitDirection(HitResult);

@@ -59,6 +59,12 @@ public:
 		AActor* DamageCauser
 	) override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -200,13 +206,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void EndStun();
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	void Die();
 
+	UFUNCTION(BlueprintCallable)
+	void FinishDeath();
 private:
 	// Camera boom positioning camera behind the character
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -461,6 +465,9 @@ private:
 	void PlayHitMontageAccordingToHitDirection(FHitResult HitResult);
 	void PlayHitMontage(FName Section, float PlayRate = 1.0f);
 	void PlayMontageSection(FName Section, float PlayRate, UAnimMontage* MontageToPlay);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DeathMontage;
 public:
 	// Returns CameraBoom subobject
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
