@@ -130,6 +130,9 @@ protected:
 	void AttemptToStunCharacter(AShooterCharacter* Victim, const FHitResult& HitResult);
 
 	void ResetCanAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishDeath();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles;
@@ -230,6 +233,8 @@ private:
 	UAnimMontage* DeathMontage;
 
 	void PlayDeathMontage(const FHitResult& HitResult);
+	
+	bool bDying;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

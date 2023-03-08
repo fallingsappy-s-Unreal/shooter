@@ -36,7 +36,8 @@ AEnemy::AEnemy() :
 	LeftWeaponSocket(TEXT("FX_Trail_L_01")),
 	RightWeaponSocket(TEXT("FX_Trail_R_01")),
 	bCanAttack(true),
-	AttackWaitTime(1.f)
+	AttackWaitTime(1.f),
+	bDying(false)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -146,6 +147,9 @@ void AEnemy::BeginPlay()
 
 void AEnemy::Die(const FHitResult& HitResult)
 {
+	if (bDying) return;
+	bDying = true;
+	
 	HideHealthBar();
 	PlayDeathMontage(HitResult);
 	
@@ -158,6 +162,9 @@ void AEnemy::Die(const FHitResult& HitResult)
 
 void AEnemy::Die()
 {
+	if (bDying) return;
+	bDying = true;
+	
 	HideHealthBar();
 	PlayMontageSection(FName("DeathFromFront"), 1.0f, DeathMontage);
 	if (EnemyController)
@@ -394,6 +401,11 @@ void AEnemy::ResetCanAttack()
 	}
 }
 
+void AEnemy::FinishDeath()
+{
+	Destroy();
+}
+
 void AEnemy::ShowHealthBar_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(HealthBarTimer);
@@ -440,7 +452,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	if (Health - DamageAmount <= 0.f)
 	{
 		Health = 0.f;
-		Die(PointDamageEvent->HitInfo);
 	}
 	else
 	{
@@ -449,7 +460,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	
 	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{
-		// point damage event, pass off to helper function
 		FPointDamageEvent* const PointDamageEvent = (FPointDamageEvent*) &DamageEvent;
 	
 		if (Health - DamageAmount <= 0.f)
