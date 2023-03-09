@@ -103,7 +103,9 @@ AShooterCharacter::AShooterCharacter() :
 	Health(100.f),
 	MaxHealth(100.f),
 
-	StunChance(0.25f)
+	StunChance(0.25f),
+
+	bDead(false)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -1042,6 +1044,7 @@ void AShooterCharacter::EndStun()
 
 void AShooterCharacter::Die()
 {
+	bDead = true;
 	PlayMontageSection(FName("Default"), 1.0f, DeathMontage);
 }
 
